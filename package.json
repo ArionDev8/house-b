@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/ArionDev8/house-b/issues"
   },
-  "homepage": "https://github.com/ArionDev8/house-b#readme"
+  "homepage": "https://github.com/ArionDev8/house-b#readme",
+  "dependencies": {
+    "express": "^4.19.2",
+    "mongodb": "^6.8.0"
+  }
 }
