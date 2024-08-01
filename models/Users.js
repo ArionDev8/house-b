@@ -30,11 +30,12 @@ const usersSchema = new Schema({
 
 export const Users = mongoose.model('Users', usersSchema);
 
-
 const usersJoiSchema = Joi.object({
   firstName: Joi.string().min(4).max(50).required(),
   lastName: Joi.string().min(4).max(50).required(),
-  email: Joi.string().email({ tlds: { allow: ['com', 'org',] } }).required(),
+  email: Joi.string()
+    .email({ tlds: { allow: ['com', 'org'] } })
+    .required(),
   password: Joi.string().min(6).max(255).required(),
   role: Joi.string().valid('user', 'admin').required(),
 });
