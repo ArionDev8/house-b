@@ -20,14 +20,15 @@
   "homepage": "https://github.com/ArionDev8/house-b#readme",
   "dependencies": {
     "express": "^4.19.2",
+    "joi": "^17.13.3",
     "mongodb": "^6.8.0",
-    "mongoose": "^8.5.2",
-    "nodemon": "^3.1.4"
+    "mongoose": "^8.5.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",
     "eslint": "^9.8.0",
     "globals": "^15.8.0",
-    "prettier": "3.3.3"
+    "prettier": "3.3.3",
+    "nodemon": "^3.1.4"
   }
 }

@@ -5,17 +5,19 @@ import userRoutes from './routes/userRoutes.js';
 const app = express();
 
 app.use(express.json());
-app.use('/api', userRoutes);
+app.use('/users', userRoutes);
 
 connectToDb((error) => {
   if (!error) {
-    app.listen(5000, () => {
-      console.log('App listening on port 5000');
+    app.get('/health', (req, res) => {
+      res.json('200 OK');
     });
     getDb();
   }
 });
 
-app.get('/', (req, res) => {
-  res.json({ msg: 'Welcome!' });
+app.listen(5000, () => {
+  console.log('App listening on port 5000');
 });
+
+
