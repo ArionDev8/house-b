@@ -14,6 +14,11 @@ const rezidencialeOptions = [
 const komercialeOptions = ['Zyre', 'Dyqan', 'Toke', 'Shitje biznesi'];
 
 const listingsSchema = new Schema({
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Users',
+    required: true,
+  },
   coordinates: [
     {
       lat: {
