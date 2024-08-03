@@ -28,18 +28,18 @@ const usersSchema = new Schema({
   },
 });
 
-export const Users = mongoose.model('Users', usersSchema);
+export const User = mongoose.model('User', usersSchema);
 
-const usersJoiSchema = Joi.object({
-  firstName: Joi.string().min(4).max(50).required(),
-  lastName: Joi.string().min(4).max(50).required(),
-  email: Joi.string()
-    .email({ tlds: { allow: ['com', 'org'] } })
-    .required(),
+export const newUserCreate = Joi.object({
+  firstName: Joi.string().max(50).required(),
+  lastName: Joi.string().max(50).required(),
+  email: Joi.string().email().required(),
   password: Joi.string().min(6).max(255).required(),
-  role: Joi.string().valid('user', 'admin').required(),
+  role: Joi.string().valid('user', 'admin'),
 });
 
-export const validateUser = (user) => {
-  return usersJoiSchema.validate(user);
-};
+export const updateUserSchema = Joi.object({
+  firstName: Joi.string().max(50),
+  lastName: Joi.string().max(50),
+  email: Joi.string().email(),
+});
