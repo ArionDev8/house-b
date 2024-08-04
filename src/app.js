@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import './db.js';
 import userRoutes from './routes/userRoutes.js';
+import listingRoutes from './routes/listingRoutes.js';
 import mongoose from 'mongoose';
 import { RealEstateErrors } from './utils/ErrorHandler.js';
 
@@ -9,7 +10,7 @@ const app = express();
 
 app.use(express.json());
 app.use('/users', userRoutes);
-
+app.use('/listings', listingRoutes);
 app.use((err, req, res) => {
   if (err instanceof RealEstateErrors) {
     res.status(err.code);
