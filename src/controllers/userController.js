@@ -1,10 +1,17 @@
 import mongoose from 'mongoose';
-import { User, newUserCreate, updateUserSchema } from '../models/User.js';
+import bcrypt from 'bcrypt';
+import { User } from '../models/User.js';
 import { RealEstateErrors } from '../utils/ErrorHandler.js';
 
 export const createUser = async (req, res, next) => {
-  const user = new User(req.body);
   try {
+    const salt = await bcrypt.genSalt(10);
+
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    const user = new User({
+      ...req.body,
+      password: hashedPassword,
+    });
     await user.save();
     const { _id, firstName, lastName, email } = user;
     res.status(201).send({
@@ -13,7 +20,7 @@ export const createUser = async (req, res, next) => {
       lastName,
       email,
     });
-  } catch (err) {
+  } catch {
     next(new RealEstateErrors());
   }
 };
@@ -21,8 +28,14 @@ export const createUser = async (req, res, next) => {
 export const getAllUsers = async (req, res, next) => {
   try {
     const users = await User.find();
-    res.status(200).json(users);
-  } catch (err) {
+    const filteredUsers = users.map((user) => ({
+      id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+    }));
+    res.status(200).json(filteredUsers);
+  } catch {
     next(new RealEstateErrors());
   }
 };
@@ -45,26 +58,22 @@ export const getUserById = async (req, res, next) => {
   }
 };
 
-
 export const updateUser = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
-      req.body,
-      { new: true },
-    );
-    
+    const updatedUser = await User.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+
     if (!updatedUser) {
       return res.status(404).json({ message: 'User not found' });
     }
     const { _id, firstName, lastName, email } = updatedUser;
     res.status(201).send({ id: _id, firstName, lastName, email });
-  } catch (err) {
+  } catch {
     next(new RealEstateErrors());
   }
 };
-
 
 export const deleteUser = async (req, res, next) => {
   const { id } = req.params;

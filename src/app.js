@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 app.use('/users', userRoutes);
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   if (err instanceof RealEstateErrors) {
     res.status(err.code);
     res.send({ message: err.publicMsg, error: true });
