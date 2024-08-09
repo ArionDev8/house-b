@@ -4,6 +4,7 @@ import './db.js';
 import userRoutes from './routes/userRoutes.js';
 import listingRoutes from './routes/listingRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
+import reservationRoutes from './routes/reservationRoutes.js';
 import mongoose from 'mongoose';
 import { RealEstateErrors } from './utils/ErrorHandler.js';
 
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use('/users', userRoutes);
 app.use('/listings', listingRoutes);
 app.use('/reviews', reviewRoutes);
+app.use('/reservations', reservationRoutes);
 app.use((err, req, res) => {
   if (err instanceof RealEstateErrors) {
     res.status(err.code);
