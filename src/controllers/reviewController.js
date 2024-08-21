@@ -14,13 +14,14 @@ export const createReview = async (req, res, next) => {
 
 export const getAllReviews = async (req, res, next) => {
   try {
-    const reviews = await Review.find();
+    const reviews = await Review.find({});
     const filteredReviews = reviews.map((review) => ({
       id: review._id,
       userId: review.userId,
       listingId: review.listingId,
       stars: review.stars,
       comments: review.comment,
+      isDeleted: review.isDeleted,
     }));
     res.status(200).send(filteredReviews);
   } catch {
@@ -55,7 +56,7 @@ export const deleteReview = async (req, res, next) => {
   }
 
   try {
-    const deletedReview = await Review.findByIdAndDelete(
+    const deletedReview = await Review.findById(
       new mongoose.Types.ObjectId(id),
     );
 
@@ -63,8 +64,43 @@ export const deleteReview = async (req, res, next) => {
       return res.status(404).send({ message: 'Review not found' });
     }
 
+    if (deletedReview.isDeleted === true) {
+      return res.status(400).send({ message: 'Review already deleted' });
+    } else {
+      deletedReview.isDeleted = true;
+
+      await deletedReview.save();
+    }
+
     res.status(200).send({ message: 'Review deleted successfully' });
   } catch (err) {
     next(err);
+  }
+};
+
+export const getReviewsByListing = async (req, res, next) => {
+  const { listingId } = req.params;
+
+  try {
+    const reviews = await Review.find({ listingId });
+
+    if (!reviews.length) {
+      return res
+        .status(200)
+        .send({ message: 'No reviews found for this listing', data: [] });
+    }
+
+    const filteredReviews = reviews.map((review) => ({
+      id: review._id,
+      userId: review.userId,
+      stars: review.stars,
+      comment: review.comment,
+    }));
+
+    res
+      .status(200)
+      .send({ totalCount: filteredReviews.length, data: filteredReviews });
+  } catch {
+    next(new RealEstateErrors());
   }
 };

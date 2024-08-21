@@ -27,7 +27,7 @@ export const createUser = async (req, res, next) => {
 
 export const getAllUsers = async (req, res, next) => {
   try {
-    const users = await User.find();
+    const users = await User.find({});
     const filteredUsers = users.map((user) => ({
       id: user._id,
       firstName: user.firstName,

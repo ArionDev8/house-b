@@ -18,6 +18,11 @@ const reservationsSchema = new Schema({
     type: Date,
     required: true,
   },
+
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 export const Reservation = mongoose.model('reservations', reservationsSchema);

@@ -4,6 +4,7 @@ import {
   getAllReservations,
   updateReservation,
   deleteReservation,
+  getReservationsByListing,
 } from '../controllers/reservationController.js';
 import { validate } from '../utils/validationMiddleware.js';
 import {
@@ -16,6 +17,7 @@ const router = express.Router();
 
 router.post('/', validate('body', newReservationSchema), createReservation);
 router.get('/', getAllReservations);
+router.get('/:listingId', getReservationsByListing);
 router.put(
   '/:id',
   validate('body', updateReservationSchema),
