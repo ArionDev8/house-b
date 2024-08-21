@@ -4,6 +4,7 @@ import {
   getAllReviews,
   updateReview,
   deleteReview,
+  getReviewsByListing,
 } from '../controllers/reviewController.js';
 import { validate } from '../utils/validationMiddleware.js';
 import { newReviewSchema, updateReviewSchema } from '../models/Review.js';
@@ -13,6 +14,7 @@ const router = express.Router();
 
 router.post('/', validate('body', newReviewSchema), createReview);
 router.get('/', getAllReviews);
+router.get('/:listingId', getReviewsByListing);
 router.put(
   '/:id',
   validate('body', updateReviewSchema),

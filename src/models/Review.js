@@ -16,13 +16,18 @@ const reviewsSchema = new Schema({
   },
 
   stars: {
-    type: String,
+    type: Number,
     required: true,
   },
 
   comment: {
     type: String,
     required: true,
+  },
+
+  isDeleted: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -31,11 +36,11 @@ export const Review = mongoose.model('Reviews', reviewsSchema);
 export const newReviewSchema = Joi.object({
   userId: Joi.string().required(),
   listingId: Joi.string().required(),
-  stars: Joi.string().required(),
+  stars: Joi.number().required(),
   comment: Joi.string().min(20).max(100).required(),
 });
 
 export const updateReviewSchema = Joi.object({
-  stars: Joi.string().required(),
+  stars: Joi.number().required(),
   comment: Joi.string().min(20).max(100).required(),
 });
