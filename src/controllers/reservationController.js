@@ -109,12 +109,10 @@ export const getReservationsByListing = async (req, res, next) => {
       isDeleted: reservation.isDeleted,
     }));
 
-    res
-      .status(200)
-      .send({
-        totalCount: filteredReservations.length,
-        data: filteredReservations,
-      });
+    res.status(200).send({
+      totalCount: filteredReservations.length,
+      data: filteredReservations,
+    });
   } catch {
     next(new RealEstateErrors());
   }
