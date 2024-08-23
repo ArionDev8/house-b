@@ -6,15 +6,20 @@ import {
   deleteReview,
   getReviewsByListing,
 } from '../controllers/reviewController.js';
-import { validate,authenticateJWT } from '../utils/validationMiddleware.js';
+import { validate, authenticateJWT } from '../utils/validationMiddleware.js';
 import { newReviewSchema, updateReviewSchema } from '../models/Review.js';
 import { ObjectIdParam } from '../utils/ObjectIdUtils.js';
 
 const router = express.Router();
 
-router.post('/', authenticateJWT,validate('body', newReviewSchema), createReview);
+router.post(
+  '/',
+  authenticateJWT,
+  validate('body', newReviewSchema),
+  createReview,
+);
 router.get('/', authenticateJWT, getAllReviews);
-router.get('/:listingId', authenticateJWT,getReviewsByListing);
+router.get('/:listingId', authenticateJWT, getReviewsByListing);
 router.put(
   '/:id',
   authenticateJWT,
@@ -22,6 +27,11 @@ router.put(
   validate('params', ObjectIdParam),
   updateReview,
 );
-router.delete('/:id', authenticateJWT,validate('params', ObjectIdParam), deleteReview);
+router.delete(
+  '/:id',
+  authenticateJWT,
+  validate('params', ObjectIdParam),
+  deleteReview,
+);
 
 export default router;

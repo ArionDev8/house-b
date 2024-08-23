@@ -6,7 +6,7 @@ import {
   deleteReservation,
   getReservationsByListing,
 } from '../controllers/reservationController.js';
-import { validate,authenticateJWT } from '../utils/validationMiddleware.js';
+import { validate, authenticateJWT } from '../utils/validationMiddleware.js';
 import {
   newReservationSchema,
   updateReservationSchema,
@@ -15,9 +15,14 @@ import { ObjectIdParam } from '../utils/ObjectIdUtils.js';
 
 const router = express.Router();
 
-router.post('/', authenticateJWT,validate('body', newReservationSchema), createReservation);
-router.get('/', authenticateJWT,getAllReservations);
-router.get('/:listingId', authenticateJWT,getReservationsByListing);
+router.post(
+  '/',
+  authenticateJWT,
+  validate('body', newReservationSchema),
+  createReservation,
+);
+router.get('/', authenticateJWT, getAllReservations);
+router.get('/:listingId', authenticateJWT, getReservationsByListing);
 router.put(
   '/:id',
   authenticateJWT,
@@ -25,6 +30,11 @@ router.put(
   validate('params', ObjectIdParam),
   updateReservation,
 );
-router.delete('/:id', authenticateJWT,validate('params', ObjectIdParam), deleteReservation);
+router.delete(
+  '/:id',
+  authenticateJWT,
+  validate('params', ObjectIdParam),
+  deleteReservation,
+);
 
 export default router;
