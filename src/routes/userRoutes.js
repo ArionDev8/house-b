@@ -24,10 +24,9 @@ router.post('/logout', logoutUser);
 router.get('/', getAllUsers);
 router.get('/:id', getUserById);
 router.put(
-  '/:id',
+  '/',
   authenticateJWT,
   validate('body', updateUserSchema),
-  validate('params', ObjectIdParam),
   updateUser,
 );
 router.delete(

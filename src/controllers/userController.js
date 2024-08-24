@@ -52,7 +52,7 @@ export const loginUser = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -74,7 +74,6 @@ export const loginUser = async (req, res) => {
 };
 
 export const logoutUser = (req, res) => {
-  res.clearCookie('token');
   res.status(200).json({ message: 'Logged out successfully' });
 };
 
@@ -97,7 +96,7 @@ export const getUserById = async (req, res, next) => {
 };
 
 export const updateUser = async (req, res, next) => {
-  const { id } = req.params;
+  const { id } = req.user.id;
   try {
     const updatedUser = await User.findByIdAndUpdate(id, req.body, {
       new: true,
