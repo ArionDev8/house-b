@@ -55,9 +55,13 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    });
+    const token = jwt.sign(
+      { id: user._id, firstName: user.firstName, lastName: user.lastName },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '1h',
+      },
+    );
 
     const { _id, firstName, lastName } = user;
 
@@ -73,8 +77,19 @@ export const loginUser = async (req, res) => {
   }
 };
 
-export const logoutUser = (req, res) => {
-  res.status(200).json({ message: 'Logged out successfully' });
+export const getMe = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+
+    const user = await User.findById(id).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json(user);
+  } catch {
+    next(new RealEstateErrors());
+  }
 };
 
 export const getUserById = async (req, res, next) => {

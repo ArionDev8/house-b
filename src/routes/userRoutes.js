@@ -6,7 +6,7 @@ import {
   updateUser,
   deleteUser,
   loginUser,
-  logoutUser,
+  getMe,
 } from '../controllers/userController.js';
 import { validate, authenticateJWT } from '../utils/validationMiddleware.js';
 import {
@@ -20,7 +20,7 @@ const router = express.Router();
 
 router.post('/', validate('body', newUserSchema), createUser);
 router.post('/login', validate('body', loginUserSchema), loginUser);
-router.post('/logout', logoutUser);
+router.get('/me', authenticateJWT, getMe);
 router.get('/', getAllUsers);
 router.get('/:id', getUserById);
 router.put(
