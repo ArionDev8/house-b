@@ -50,11 +50,6 @@ const listingsSchema = new Schema({
     required: true,
   },
 
-  floorNumber: {
-    type: Number,
-    required: true,
-  },
-
   elevator: {
     type: Boolean,
     required: true,
@@ -62,53 +57,24 @@ const listingsSchema = new Schema({
 
   buildingType: {
     type: String,
-    enum: ['rezidenciale', 'komerciale'],
+    enum: ['Apartament', 'Villa', 'Hotel', 'Office'],
     required: true,
   },
 
-  typology: {
-    type: String,
-    enum: [
-      'Apartament',
-      'Vile',
-      'Private House',
-      'Garage',
-      'Truall',
-      'Zyre',
-      'Dyqan',
-      'Toke',
-      'Shitje biznesi',
-    ],
-    required: true,
-  },
-
-  yearFinished: {
-    type: Number,
-    required: true,
-  },
-
-  sharedArea: {
-    type: Number,
-    required: true,
-  },
-
-  netArea: {
-    type: Number,
-    required: true,
-  },
+  amenities: [
+    {
+      type: String,
+      required: true,
+    },
+  ],
 
   price: {
     type: Number,
     required: true,
   },
 
-  furnished: {
+  freeParking: {
     type: Boolean,
-    required: true,
-  },
-
-  parkingSlots: {
-    type: Number,
     required: true,
   },
 
@@ -116,15 +82,66 @@ const listingsSchema = new Schema({
     type: Boolean,
     required: true,
   },
-
-  type: {
-    type: String,
-    enum: ['Shitje', 'qera'],
-    required: true,
-  },
 });
 
 export const Listing = mongoose.model('Listings', listingsSchema);
+
+const houseAmenities = [
+  'Netflix',
+  'Wi-Fi',
+  'Free Parking',
+  'Pool',
+  'Air Conditioning',
+  'Laundry',
+  'Balcony',
+];
+
+const hotelAmenities = [
+  'Swimming pool',
+  'Fitness center',
+  'Spa treatments',
+  'Restaurant and bar',
+  'Room service',
+  'Laundry service',
+  'Wi-Fi',
+  'Rooftop pool',
+  'Private beach access',
+  'In-room dining',
+  'Number of Beds',
+  'Number of Rooms',
+];
+
+const villasAmenities = [
+  'Private pool',
+  'Kitchen',
+  'Laundry facilities',
+  'Garden',
+  'Barbecue grill',
+  'Parking',
+  'Home theater',
+  'Game room',
+  'Wine cellar',
+  'Personal chef',
+  'Guest house',
+  'Number of Bathrooms',
+  'Number of Rooms',
+  'Panoramic View',
+];
+
+const officeAmenities = [
+  'Meeting rooms',
+  'Conference rooms',
+  'Shared workspace',
+  'Kitchenette',
+  'Wi-Fi',
+  'Copier/printer/scanner',
+  'Reception area',
+  'Panoramic views',
+  'Café or restaurant',
+  'Rooftop terrace',
+  'Secure parking',
+  'Number of Bathrooms',
+];
 
 export const newListingSchema = Joi.object({
   userId: Joi.string().required(),
@@ -150,28 +167,34 @@ export const newListingSchema = Joi.object({
 
   nrOfRooms: Joi.number().required(),
   nrOfToilets: Joi.number().required(),
-  floorNumber: Joi.number().required(),
   elevator: Joi.boolean().required(),
-  buildingType: Joi.string().valid('rezidenciale', 'komerciale').required(),
-  typology: Joi.string()
-    .valid(
-      'Apartament',
-      'Vile',
-      'Private House',
-      'Garage',
-      'Truall',
-      'Zyre',
-      'Dyqan',
-      'Toke',
-      'Shitje biznesi',
-    )
+  buildingType: Joi.string()
+    .valid('Apartament', 'Villa', 'Hotel', 'Office')
     .required(),
-  yearFinished: Joi.number().required(),
-  sharedArea: Joi.number().required(),
-  netArea: Joi.number().required(),
+  amenities: Joi.array()
+    .items(Joi.string().required())
+    .when('buildingType', {
+      is: 'Apartment',
+      then: Joi.array()
+        .items(Joi.string().valid(...houseAmenities))
+        .required(),
+      otherwise: Joi.when('buildingType', {
+        is: 'Hotel',
+        then: Joi.array()
+          .items(Joi.string().valid(...hotelAmenities))
+          .required(),
+        otherwise: Joi.when('buildingType', {
+          is: 'Villa',
+          then: Joi.array()
+            .items(Joi.string().valid(...villasAmenities))
+            .required(),
+          otherwise: Joi.array()
+            .items(Joi.string().valid(...officeAmenities))
+            .required(),
+        }),
+      }),
+    }),
   price: Joi.number().required(),
-  furnished: Joi.boolean().required(),
-  parkingSlots: Joi.number().required(),
+  freeParking: Joi.boolean().required(),
   balcony: Joi.boolean().required(),
-  type: Joi.string().valid('Shitje', 'qera').required(),
 });

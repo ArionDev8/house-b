@@ -4,9 +4,8 @@ export class RealEstateErrors extends Error {
     msg = 'Internal Server Error',
     publicMsg = 'Internal Server Error',
   ) {
-    super();
+    super(msg);
     this.code = code;
-    this.msg = msg;
     this.publicMsg = publicMsg;
   }
 

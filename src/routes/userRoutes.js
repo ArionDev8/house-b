@@ -18,7 +18,7 @@ import { ObjectIdParam } from '../utils/ObjectIdUtils.js';
 
 const router = express.Router();
 
-router.post('/', validate('body', newUserSchema), createUser);
+router.post('/signup', validate('body', newUserSchema), createUser);
 router.post('/login', validate('body', loginUserSchema), loginUser);
 router.get('/me', authenticateJWT, getMe);
 router.get('/', getAllUsers);

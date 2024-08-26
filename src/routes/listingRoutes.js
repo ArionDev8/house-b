@@ -17,7 +17,7 @@ router.post(
   validate('body', newListingSchema),
   createListing,
 );
-router.get('/', authenticateJWT, getAllListings);
+router.get('/', getAllListings);
 router.put(
   '/:id',
   authenticateJWT,
