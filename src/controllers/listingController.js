@@ -8,8 +8,7 @@ export const createListing = async (req, res, next) => {
     await listing.save();
     res.status(200).send({ message: 'Listing saved successfully' });
   } catch {
-    console.error('Error in createListing:', err); // Log the full error
-    next(new RealEstateErrors(err.code || 500, err.message, err.publicMsg));
+    next(new RealEstateErrors());
   }
 };
 
