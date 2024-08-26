@@ -60,3 +60,33 @@ export const deleteListing = async (req, res, next) => {
     next(err);
   }
 };
+
+export const getAllNearListings = async (req, res, next) => {
+  const { lat, long, maxDistance = 1000 } = req.query;
+
+  if (!lat || !long) {
+    return res
+      .status(400)
+      .json({ error: 'Latitude and longitude are required' });
+  }
+
+  try {
+    const allNearListings = await Listing.find({
+      coordinates: {
+        $near: {
+          $geometry: {
+            type: 'Point',
+            coordinates: [parseFloat(long), parseFloat(lat)],
+          },
+          $maxDistance: maxDistance,
+        },
+      },
+    });
+
+    res.status(200).json(allNearListings);
+  } catch (error) {
+    next(
+      new RealEstateErrors(500, error.message, 'Failed to get nearby listings'),
+    );
+  }
+};
