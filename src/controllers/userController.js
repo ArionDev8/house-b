@@ -34,6 +34,7 @@ export const getAllUsers = async (req, res, next) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      password: user.password,
     }));
     res.status(200).json(filteredUsers);
   } catch {
@@ -111,8 +112,13 @@ export const getUserById = async (req, res, next) => {
 };
 
 export const updateUser = async (req, res, next) => {
-  const { id } = req.user.id;
+  const { id } = req.user;
   try {
+    if (req.body.password) {
+      const salt = await bcrypt.genSalt(10);
+      req.body.password = await bcrypt.hash(req.body.password, salt);
+    }
+
     const updatedUser = await User.findByIdAndUpdate(id, req.body, {
       new: true,
     });
