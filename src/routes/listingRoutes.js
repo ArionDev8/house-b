@@ -4,6 +4,7 @@ import {
   getAllListings,
   updateListing,
   deleteListing,
+  getAllNearListings,
 } from '../controllers/listingController.js';
 import { validate, authenticateJWT } from '../utils/validationMiddleware.js';
 import { newListingSchema } from '../models/Listing.js';
@@ -30,5 +31,6 @@ router.delete(
   validate('params', ObjectIdParam),
   deleteListing,
 );
+router.get('/nearby', getAllNearListings);
 
 export default router;

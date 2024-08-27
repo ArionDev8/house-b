@@ -8,18 +8,10 @@ const listingsSchema = new Schema({
     ref: 'Users',
     required: true,
   },
-  coordinates: [
-    {
-      lat: {
-        type: Number,
-        required: true,
-      },
-      long: {
-        type: Number,
-        required: true,
-      },
-    },
-  ],
+  coordinates: {
+    type: [Number], // [longitude, latitude]
+    required: true,
+  },
 
   title: {
     type: String,
@@ -84,6 +76,8 @@ const listingsSchema = new Schema({
   },
 });
 
+listingsSchema.index({ coordinates: '2dsphere' });
+
 export const Listing = mongoose.model('Listings', listingsSchema);
 
 const houseAmenities = [
@@ -146,17 +140,11 @@ const officeAmenities = [
 export const newListingSchema = Joi.object({
   userId: Joi.string().required(),
   coordinates: Joi.array()
-    .items(
-      Joi.object({
-        lat: Joi.number().required(),
-        long: Joi.number().required(),
-      }),
-    )
+    .items(Joi.number().required()) // [longitude, latitude]
+    .length(2)
     .required(),
-
   title: Joi.string().required(),
   address: Joi.string().required(),
-
   images: Joi.array()
     .items(
       Joi.object({
@@ -164,7 +152,6 @@ export const newListingSchema = Joi.object({
       }),
     )
     .required(),
-
   nrOfRooms: Joi.number().required(),
   nrOfToilets: Joi.number().required(),
   elevator: Joi.boolean().required(),
@@ -173,26 +160,30 @@ export const newListingSchema = Joi.object({
     .required(),
   amenities: Joi.array()
     .items(Joi.string().required())
+    .required()
     .when('buildingType', {
-      is: 'Apartment',
+      is: 'Apartament',
       then: Joi.array()
         .items(Joi.string().valid(...houseAmenities))
         .required(),
-      otherwise: Joi.when('buildingType', {
-        is: 'Hotel',
-        then: Joi.array()
-          .items(Joi.string().valid(...hotelAmenities))
-          .required(),
-        otherwise: Joi.when('buildingType', {
-          is: 'Villa',
-          then: Joi.array()
-            .items(Joi.string().valid(...villasAmenities))
-            .required(),
-          otherwise: Joi.array()
-            .items(Joi.string().valid(...officeAmenities))
-            .required(),
-        }),
-      }),
+    })
+    .when('buildingType', {
+      is: 'Hotel',
+      then: Joi.array()
+        .items(Joi.string().valid(...hotelAmenities))
+        .required(),
+    })
+    .when('buildingType', {
+      is: 'Villa',
+      then: Joi.array()
+        .items(Joi.string().valid(...villasAmenities))
+        .required(),
+    })
+    .when('buildingType', {
+      is: 'Office',
+      then: Joi.array()
+        .items(Joi.string().valid(...officeAmenities))
+        .required(),
     }),
   price: Joi.number().required(),
   freeParking: Joi.boolean().required(),
