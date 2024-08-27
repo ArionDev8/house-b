@@ -74,6 +74,12 @@ const listingsSchema = new Schema({
     type: Boolean,
     required: true,
   },
+
+  isFav: {
+    type: Boolean,
+    required: true,
+    default: false,
+  }
 });
 
 listingsSchema.index({ coordinates: '2dsphere' });
@@ -188,4 +194,5 @@ export const newListingSchema = Joi.object({
   price: Joi.number().required(),
   freeParking: Joi.boolean().required(),
   balcony: Joi.boolean().required(),
+  isFav: Joi.boolean().required(),
 });
