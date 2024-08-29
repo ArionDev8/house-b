@@ -14,7 +14,7 @@ import { newListingSchema } from '../models/Listing.js';
 import { ObjectIdParam } from '../utils/ObjectIdUtils.js';
 
 const router = express.Router();
-const upload = multer({storage: storage})
+const upload = multer({ storage: storage });
 
 router.post(
   '/',
@@ -26,7 +26,7 @@ router.post(
   '/:listingId/images',
   authenticateJWT,
   upload.array('photos', 5),
-  uploadImages
+  uploadImages,
 );
 router.get('/', getAllListings);
 router.put(

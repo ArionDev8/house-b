@@ -17,25 +17,21 @@ export const uploadImages = async (req, res, next) => {
     const { listingId } = req.params;
     const { files } = req;
 
-    // Find the listing by ID
     const listing = await Listing.findById(listingId);
     if (!listing) {
       return res.status(404).send({ message: 'Listing not found' });
     }
 
-    // Add the uploaded image filenames to the listing's images array
     const uploadedImages = files.map((file) => ({ img: file.filename }));
     listing.images.push(...uploadedImages);
 
-    // Save the updated listing
     await listing.save();
 
     res.status(200).send({ message: 'Images uploaded successfully', listing });
-  } catch (error) {
+  } catch {
     next(new RealEstateErrors());
   }
 };
-
 
 export const getAllListings = async (req, res, next) => {
   try {
