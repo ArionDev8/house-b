@@ -27,7 +27,7 @@ const listingsSchema = new Schema({
     {
       img: {
         type: String,
-        required: true,
+        // required: true,
       },
     },
   ],
@@ -154,10 +154,10 @@ export const newListingSchema = Joi.object({
   images: Joi.array()
     .items(
       Joi.object({
-        img: Joi.string().uri().required(),
+        img: Joi.string().uri().optional(),
       }),
     )
-    .required(),
+    .optional(),
   nrOfRooms: Joi.number().required(),
   nrOfToilets: Joi.number().required(),
   elevator: Joi.boolean().required(),
