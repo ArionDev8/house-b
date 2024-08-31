@@ -4,7 +4,10 @@ import { RealEstateErrors } from '../utils/ErrorHandler.js';
 
 export const createListing = async (req, res, next) => {
   try {
-    const listing = new Listing(req.body);
+    const listing = new Listing({
+      ...req.body,
+      userId: req.user.id,
+    });
     await listing.save();
     res.status(200).send({ message: 'Listing saved successfully' });
   } catch {
