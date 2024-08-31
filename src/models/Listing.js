@@ -144,7 +144,6 @@ const officeAmenities = [
 ];
 
 export const newListingSchema = Joi.object({
-  userId: Joi.string().required(),
   coordinates: Joi.array()
     .items(Joi.number().required()) // [longitude, latitude]
     .length(2)
