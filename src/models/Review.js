@@ -34,7 +34,6 @@ const reviewsSchema = new Schema({
 export const Review = mongoose.model('Reviews', reviewsSchema);
 
 export const newReviewSchema = Joi.object({
-  userId: Joi.string().required(),
   listingId: Joi.string().required(),
   stars: Joi.number().required(),
   comment: Joi.string().min(20).max(100).required(),
