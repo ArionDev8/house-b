@@ -46,6 +46,19 @@ export const getAllListings = async (req, res, next) => {
   }
 };
 
+export const getAllYourListings = async (req, res, next) => {
+  try {
+    const listings = await Listing.find({ userId: req.user.id });
+    if (!listings) {
+      return res.status(404).send({ message: 'You have no listings.' });
+    }
+
+    return res.status(200).json(listings);
+  } catch {
+    next(new RealEstateErrors());
+  }
+};
+
 export const updateListing = async (req, res, next) => {
   const { id } = req.params;
   try {
