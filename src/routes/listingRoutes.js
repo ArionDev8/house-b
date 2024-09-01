@@ -6,6 +6,7 @@ import {
   uploadImages,
   getAllListings,
   getAllYourListings,
+  getOneListing,
   updateListing,
   deleteListing,
   getAllNearListings,
@@ -32,6 +33,12 @@ router.post(
 );
 router.get('/', getAllListings);
 router.get('/yourListings', authenticateJWT, getAllYourListings);
+router.get(
+  '/:id',
+  authenticateJWT,
+  validate('params', ObjectIdParam),
+  getOneListing,
+);
 router.put(
   '/:id',
   authenticateJWT,
