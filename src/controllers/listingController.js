@@ -77,9 +77,13 @@ export const getOneListing = async (req, res, next) => {
 export const updateListing = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const updatedListing = await Listing.findByIdAndUpdate(id, req.body, {
-      new: true,
-    });
+    const updatedListing = await Listing.findOneAndUpdate(
+      { userId: req.user.id, _id: id },
+      req.body,
+      {
+        new: true,
+      },
+    );
 
     if (!updatedListing) {
       return res.status(404).json({ message: 'Listing not found' });
