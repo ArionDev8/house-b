@@ -6,7 +6,7 @@ export const createReview = async (req, res, next) => {
   try {
     const review = new Review({
       ...req.body,
-      userId: req.user.id
+      userId: req.user.id,
     });
     await review.save();
     res.status(200).send({ message: 'Review saved successfully' });
