@@ -8,6 +8,7 @@ import {
   updateListing,
   deleteListing,
   getAllNearListings,
+  pagination,
 } from '../controllers/listingController.js';
 import { validate, authenticateJWT } from '../utils/validationMiddleware.js';
 import { newListingSchema } from '../models/Listing.js';
@@ -42,5 +43,6 @@ router.delete(
   deleteListing,
 );
 router.get('/nearby', getAllNearListings);
+router.get('/movies', authenticateJWT, pagination);
 
 export default router;
