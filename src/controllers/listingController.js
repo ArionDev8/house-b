@@ -114,3 +114,18 @@ export const getAllNearListings = async (req, res, next) => {
     );
   }
 };
+
+export const pagination = async (req, res, next) => {
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const skip = (page - 1) * limit;
+
+  try {
+    let movies = Listing.find().skip(skip).limit(limit);
+    movies = await movies;
+
+    res.json(movies);
+  } catch (error) {
+    next(new RealEstateErrors(error.message));
+  }
+};
