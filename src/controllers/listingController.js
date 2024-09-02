@@ -49,11 +49,15 @@ export const getAllListings = async (req, res, next) => {
 export const getAllYourListings = async (req, res, next) => {
   try {
     const listings = await Listing.find({ userId: req.user.id });
-    if (!listings) {
+    const filteredListings = listings.filter(
+      (listing) => listing.isDeleted === false,
+    );
+
+    if (!filteredListings) {
       return res.status(404).send({ message: 'You have no listings.' });
     }
 
-    return res.status(200).json(listings);
+    return res.status(200).json(filteredListings);
   } catch {
     next(new RealEstateErrors());
   }
@@ -106,14 +110,19 @@ export const deleteListing = async (req, res, next) => {
   }
 
   try {
-    const deletedListing = await Listing.findByIdAndDelete(
-      new mongoose.Types.ObjectId(id),
-    );
+    const deletedListing = await Listing.findById(id);
 
     if (!deletedListing) {
       return res.status(404).json({ message: 'Listing not found' });
     }
 
+    if (deletedListing.isDeleted === true) {
+      return res.status(400).send({ message: 'Listing already deleted' });
+    } else {
+      deletedListing.isDeleted = true;
+
+      await deletedListing.save();
+    }
     res.status(200).json({ message: 'Listing deleted successfully' });
   } catch (err) {
     next(err);
@@ -142,7 +151,10 @@ export const getAllNearListings = async (req, res, next) => {
       },
     });
 
-    res.status(200).json(allNearListings);
+    const filteredAllNearListings = allNearListings.filter(
+      (listing) => listing.isDeleted === false,
+    );
+    res.status(200).json(filteredAllNearListings);
   } catch (error) {
     next(
       new RealEstateErrors(500, error.message, 'Failed to get nearby listings'),

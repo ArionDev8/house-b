@@ -74,6 +74,10 @@ const listingsSchema = new Schema({
   //   type: Boolean,
   //   required: true,
   // },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 listingsSchema.index({ coordinates: '2dsphere' });
