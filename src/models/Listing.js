@@ -193,3 +193,9 @@ export const newListingSchema = Joi.object({
   // balcony: Joi.boolean().required(),
   // isFav: Joi.boolean().required(),
 });
+
+export const searchSchema = Joi.object({
+  title: Joi.string().min(4),
+  startDate: Joi.date().timestamp('unix').required(),
+  endDate: Joi.date().timestamp('unix').required(),
+}).required();

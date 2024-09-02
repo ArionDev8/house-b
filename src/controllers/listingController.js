@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { Listing } from '../models/Listing.js';
+import { Availability } from '../models/Availability.js';
 import { RealEstateErrors } from '../utils/ErrorHandler.js';
 
 export const createListing = async (req, res, next) => {
@@ -36,12 +37,73 @@ export const uploadImages = async (req, res, next) => {
   }
 };
 
-export const getAllListings = async (req, res, next) => {
+export const searchListings = async (req, res, next) => {
   try {
-    const listings = await Listing.find({});
+    const { title, startDate, endDate } = req.query;
+    startDate.setUTCHours(0, 0, 0, 0);
+    endDate.setUTCHours(0, 0, 0, 0);
+    const availability = await Availability.aggregate([
+      {
+        $match:
+          /**
+           * query: The query in MQL.
+           */
+          {
+            startDate: {
+              $lte: startDate,
+            },
+            endDate: {
+              $gte: endDate,
+            },
+          },
+      },
+      {
+        $lookup:
+          /**
+           * from: The target collection.
+           * localField: The local join field.
+           * foreignField: The target join field.
+           * as: The name for the results.
+           * pipeline: Optional pipeline to run on the foreign collection.
+           * let: Optional variables to use in the pipeline field stages.
+           */
+          {
+            from: 'listings',
+            localField: 'listingId',
+            foreignField: '_id',
+            as: 'result',
+          },
+      },
+      {
+        $unwind:
+          /**
+           * path: Path to the array field.
+           * includeArrayIndex: Optional name for index.
+           * preserveNullAndEmptyArrays: Optional
+           *   toggle to unwind null and empty values.
+           */
+          {
+            path: '$result',
+            preserveNullAndEmptyArrays: false,
+          },
+      },
+      {
+        $match: {
+          'result.isDeleted': false,
+        },
+      },
+    ]);
 
-    res.status(200).json(listings);
-  } catch {
+    res
+      .status(200)
+      .json(
+        availability
+          .map((r) => r.result)
+          .filter((r) => (title ? r.title.includes(title) : true)),
+      );
+  } catch (err) {
+    console.log(err);
+
     next(new RealEstateErrors());
   }
 };

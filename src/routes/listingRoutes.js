@@ -4,7 +4,7 @@ import { storage } from '../utils/ImageUploader.js';
 import {
   createListing,
   uploadImages,
-  getAllListings,
+  searchListings,
   getAllYourListings,
   getOneListing,
   updateListing,
@@ -13,7 +13,7 @@ import {
   pagination,
 } from '../controllers/listingController.js';
 import { validate, authenticateJWT } from '../utils/validationMiddleware.js';
-import { newListingSchema } from '../models/Listing.js';
+import { newListingSchema, searchSchema } from '../models/Listing.js';
 import { ObjectIdParam } from '../utils/ObjectIdUtils.js';
 
 const router = express.Router();
@@ -31,7 +31,7 @@ router.post(
   upload.array('photos', 5),
   uploadImages,
 );
-router.get('/', getAllListings);
+router.get('/search', validate('query', searchSchema), searchListings);
 router.get('/nearby', getAllNearListings);
 router.get('/yourListings', authenticateJWT, getAllYourListings);
 router.get(
