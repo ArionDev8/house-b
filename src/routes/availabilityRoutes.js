@@ -17,7 +17,7 @@ router.post(
   createAvailability,
 );
 router.get(
-  '/:id/all',
+  '/:id',
   validate('params', ObjectIdParam),
   getAvailabilityForAListing,
 );
