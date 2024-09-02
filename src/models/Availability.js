@@ -23,7 +23,6 @@ const availabilities = new Schema({
 export const Availability = mongoose.model('availability', availabilities);
 
 export const newAvailabilitySchema = Joi.object({
-  listingId: Joi.string().required(),
-  startDate: Joi.date().required(),
-  endDate: Joi.date().required(),
+  startDate: Joi.date().timestamp('unix').required(),
+  endDate: Joi.date().timestamp('unix').required(),
 });
