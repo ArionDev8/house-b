@@ -62,7 +62,10 @@ export const getAllYourListings = async (req, res, next) => {
 export const getOneListing = async (req, res, next) => {
   try {
     const { id: listingId } = req.params;
-    const listing = await Listing.findOne({ userId: req.user.id, _id: listingId });
+    const listing = await Listing.findOne({
+      userId: req.user.id,
+      _id: listingId,
+    });
 
     if (!listing) {
       return res.status(404).send({ message: 'Listing not found' });

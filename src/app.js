@@ -6,6 +6,7 @@ import userRoutes from './routes/userRoutes.js';
 import listingRoutes from './routes/listingRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
 import reservationRoutes from './routes/reservationRoutes.js';
+import availabilityRoutes from './routes/availabilityRoutes.js';
 import mongoose from 'mongoose';
 import { RealEstateErrors } from './utils/ErrorHandler.js';
 
@@ -17,6 +18,7 @@ app.use('/users', userRoutes);
 app.use('/listings', listingRoutes);
 app.use('/reviews', reviewRoutes);
 app.use('/reservations', reservationRoutes);
+app.use('/listings/availability', availabilityRoutes);
 app.get('/health', (req, res) => {
   if (mongoose.connection.readyState === 1) {
     res.status(200).end();
