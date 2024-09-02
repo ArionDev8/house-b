@@ -32,6 +32,7 @@ router.post(
   uploadImages,
 );
 router.get('/', getAllListings);
+router.get('/nearby', getAllNearListings);
 router.get('/yourListings', authenticateJWT, getAllYourListings);
 router.get(
   '/:id',
@@ -51,7 +52,6 @@ router.delete(
   validate('params', ObjectIdParam),
   deleteListing,
 );
-router.get('/nearby', getAllNearListings);
 router.get('/movies', authenticateJWT, pagination);
 
 export default router;
