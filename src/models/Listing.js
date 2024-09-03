@@ -196,6 +196,6 @@ export const newListingSchema = Joi.object({
 
 export const searchSchema = Joi.object({
   title: Joi.string().min(4),
-  startDate: Joi.date().timestamp('unix').required(),
-  endDate: Joi.date().timestamp('unix').required(),
+  startDate: Joi.date().timestamp('unix'),
+  endDate: Joi.date().timestamp('unix'),
 }).required();

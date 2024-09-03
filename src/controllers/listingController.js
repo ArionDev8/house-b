@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import { Listing } from '../models/Listing.js';
-import { Availability } from '../models/Availability.js';
 import { RealEstateErrors } from '../utils/ErrorHandler.js';
 
 export const createListing = async (req, res, next) => {
@@ -40,56 +39,49 @@ export const uploadImages = async (req, res, next) => {
 export const searchListings = async (req, res, next) => {
   try {
     const { title, startDate, endDate } = req.query;
-    startDate.setUTCHours(0, 0, 0, 0);
-    endDate.setUTCHours(0, 0, 0, 0);
-    const availability = await Availability.aggregate([
+    const { lat, long } = req.params;
+
+    if (startDate) startDate.setUTCHours(0, 0, 0, 0);
+    if (endDate) endDate.setUTCHours(0, 0, 0, 0);
+
+    const listingsAvailable = await Listing.aggregate([
       {
-        $match:
-          /**
-           * query: The query in MQL.
-           */
-          {
-            startDate: {
-              $lte: startDate,
-            },
-            endDate: {
-              $gte: endDate,
-            },
+        $geoNear: {
+          near: {
+            type: 'Point',
+            coordinates: [parseFloat(long), parseFloat(lat)],
           },
-      },
-      {
-        $lookup:
-          /**
-           * from: The target collection.
-           * localField: The local join field.
-           * foreignField: The target join field.
-           * as: The name for the results.
-           * pipeline: Optional pipeline to run on the foreign collection.
-           * let: Optional variables to use in the pipeline field stages.
-           */
-          {
-            from: 'listings',
-            localField: 'listingId',
-            foreignField: '_id',
-            as: 'result',
-          },
-      },
-      {
-        $unwind:
-          /**
-           * path: Path to the array field.
-           * includeArrayIndex: Optional name for index.
-           * preserveNullAndEmptyArrays: Optional
-           *   toggle to unwind null and empty values.
-           */
-          {
-            path: '$result',
-            preserveNullAndEmptyArrays: false,
-          },
+          distanceField: 'distance',
+          maxDistance: 1000,
+          spherical: true,
+        },
       },
       {
         $match: {
-          'result.isDeleted': false,
+          isDeleted: false,
+        },
+      },
+      {
+        $lookup: {
+          from: 'availabilities',
+          localField: '_id',
+          foreignField: 'listingId',
+          as: 'result',
+        },
+      },
+      {
+        $unwind: {
+          path: '$result',
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $match: {
+          ...(startDate &&
+            endDate && {
+              'result.startDate': { $lte: startDate },
+              'result.endDate': { $gte: endDate },
+            }),
         },
       },
     ]);
@@ -97,13 +89,12 @@ export const searchListings = async (req, res, next) => {
     res
       .status(200)
       .json(
-        availability
-          .map((r) => r.result)
-          .filter((r) => (title ? r.title.includes(title) : true)),
+        listingsAvailable.filter((r) =>
+          title ? r.title.includes(title) : true,
+        ),
       );
   } catch (err) {
     console.log(err);
-
     next(new RealEstateErrors());
   }
 };

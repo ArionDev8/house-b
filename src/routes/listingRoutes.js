@@ -31,7 +31,11 @@ router.post(
   upload.array('photos', 5),
   uploadImages,
 );
-router.get('/search', validate('query', searchSchema), searchListings);
+router.get(
+  '/:long/:lat/search',
+  validate('query', searchSchema),
+  searchListings,
+);
 router.get('/nearby', getAllNearListings);
 router.get('/yourListings', authenticateJWT, getAllYourListings);
 router.get(
