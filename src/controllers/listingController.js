@@ -49,7 +49,7 @@ export const searchListings = async (req, res, next) => {
         $geoNear: {
           near: {
             type: 'Point',
-            coordinates: [parseFloat(long), parseFloat(lat)],
+            coordinates: [parseFloat(lat), parseFloat(long)],
           },
           distanceField: 'distance',
           maxDistance: 1000,
