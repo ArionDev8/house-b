@@ -32,7 +32,7 @@ router.post(
   uploadImages,
 );
 router.get(
-  '/:long/:lat/search',
+  '/:lat/:long/search',
   validate('query', searchSchema),
   searchListings,
 );
