@@ -71,14 +71,15 @@ export const searchListings = async (req, res, next) => {
           as: 'result',
         },
       },
-      {
-        $unwind: {
-          path: '$result',
-          preserveNullAndEmptyArrays: false,
-        },
-      },
+      // {
+      //   $unwind: {
+      //     path: '$result',
+      //     preserveNullAndEmptyArrays: false,
+      //   },
+      // },
       {
         $match: {
+          'result.0': {$exists: true},
           ...(startDate &&
             endDate && {
               'result.startDate': { $lte: startDate },
