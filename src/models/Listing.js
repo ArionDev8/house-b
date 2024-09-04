@@ -195,6 +195,10 @@ export const newListingSchema = Joi.object({
 });
 
 export const searchSchema = Joi.object({
+  coordinates: Joi.array()
+    .items(Joi.number().required()) // [longitude, latitude]
+    .length(2)
+    .required(),
   title: Joi.string().min(4),
   startDate: Joi.date().timestamp('unix'),
   endDate: Joi.date().timestamp('unix'),

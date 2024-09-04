@@ -18,10 +18,15 @@ export const createAvailability = async (req, res, next) => {
     if (req.user.id !== listing.userId.toString()) {
       return res.status(404).send({ message: 'Not Found.' });
     }
-
-    const conflictingAvailability = await Availability.find({
-      startDate: { $gte: startDate },
-      endDate: { $lte: endDate },
+    const conflictingAvailability = await Availability.findOne({
+      $or: [
+        { startDate: { $lte: endDate, $gte: startDate } },
+        { endDate: { $gte: startDate, $lte: endDate } },
+        {
+          startDate: { $lte: startDate },
+          endDate: { $gte: endDate },
+        },
+      ],
     }).lean();
 
     if (conflictingAvailability) {

@@ -38,8 +38,7 @@ export const uploadImages = async (req, res, next) => {
 
 export const searchListings = async (req, res, next) => {
   try {
-    const { title, startDate, endDate } = req.query;
-    const { lat, long } = req.params;
+    const { coordinates, title, startDate, endDate } = req.query;
 
     if (startDate) startDate.setUTCHours(0, 0, 0, 0);
     if (endDate) endDate.setUTCHours(0, 0, 0, 0);
@@ -49,10 +48,13 @@ export const searchListings = async (req, res, next) => {
         $geoNear: {
           near: {
             type: 'Point',
-            coordinates: [parseFloat(lat), parseFloat(long)],
+            coordinates: [
+              parseFloat(coordinates[0]),
+              parseFloat(coordinates[1]),
+            ],
           },
           distanceField: 'distance',
-          maxDistance: 1000,
+          maxDistance: 10000,
           spherical: true,
         },
       },
