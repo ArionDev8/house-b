@@ -65,7 +65,7 @@ export const searchListings = async (req, res, next) => {
       },
       {
         $lookup: {
-          from: 'availabilities',
+          from: 'reservations',
           localField: '_id',
           foreignField: 'listingId',
           as: 'result',
@@ -79,7 +79,7 @@ export const searchListings = async (req, res, next) => {
       // },
       {
         $match: {
-          'result.0': {$exists: true},
+          'result.0': { $exists: true },
           ...(startDate &&
             endDate && {
               'result.startDate': { $lte: startDate },
@@ -230,5 +230,102 @@ export const pagination = async (req, res, next) => {
     res.json(movies);
   } catch (error) {
     next(new RealEstateErrors(error.message));
+  }
+};
+
+export const getFreeDates = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(404).send({ message: 'Please enter listingId' });
+    }
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+
+    const startOfMonth = new Date(year, month, 1);
+    const endOfMonth = new Date(year, month + 1, 0);
+
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+    const startDate = today > startOfMonth ? today : startOfMonth;
+    console.log(startDate);
+
+    const result = await Listing.aggregate([
+      {
+        $match: {
+          isDeleted: false,
+        },
+      },
+      {
+        $lookup: {
+          from: 'reservations',
+          localField: '_id',
+          foreignField: 'listingId',
+          as: 'reservations',
+        },
+      },
+      {
+        $unwind: {
+          path: '$reservations',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          'reservations.startDate': { $lte: endOfMonth },
+          'reservations.endDate': { $gte: startDate },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          reservations: {
+            $push: {
+              startDate: '$reservations.startDate',
+              endDate: '$reservations.endDate',
+            },
+          },
+        },
+      },
+    ]);
+
+    if (!result.length) {
+      return res.status(404).send({ message: 'Listing not found.' });
+    }
+
+    const reservations = result[0].reservations;
+
+    const allDatesInMonth = [];
+    for (let day = startDate.getDate(); day <= endOfMonth.getDate(); day++) {
+      console.log(day);
+
+      allDatesInMonth.push(
+        new Date(year, month, day).toISOString().split('T')[0],
+      );
+    }
+
+    const bookedDates = new Set();
+    reservations.forEach((reservation) => {
+      const start = new Date(reservation.startDate);
+      const end = new Date(reservation.endDate);
+
+      start.setUTCHours(0, 0, 0, 0);
+      end.setUTCHours(23, 59, 59, 999);
+
+      let currentDate = new Date(start);
+      while (currentDate <= end) {
+        bookedDates.add(currentDate.toISOString().split('T')[0]);
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    });
+
+    const freeDates = allDatesInMonth.filter((date) => !bookedDates.has(date));
+
+    res.status(200).send({ freeDates });
+  } catch (error) {
+    next(new RealEstateErrors(error.message || 'Failed to get free dates.'));
   }
 };

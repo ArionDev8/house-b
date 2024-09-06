@@ -28,9 +28,8 @@ const reservationsSchema = new Schema({
 export const Reservation = mongoose.model('reservations', reservationsSchema);
 
 export const newReservationSchema = Joi.object({
-  listingId: Joi.string().required(),
-  startDate: Joi.date().required(),
-  endDate: Joi.date().required(),
+  startDate: Joi.date().timestamp('unix').required(),
+  endDate: Joi.date().timestamp('unix').required(),
 });
 
 export const updateReservationSchema = Joi.object({

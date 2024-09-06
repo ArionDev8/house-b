@@ -9,12 +9,12 @@ import reservationRoutes from './routes/reservationRoutes.js';
 import availabilityRoutes from './routes/availabilityRoutes.js';
 import mongoose from 'mongoose';
 import { RealEstateErrors } from './utils/ErrorHandler.js';
-import qs from 'qs'
+import qs from 'qs';
 
 const app = express();
 app.set('query parser', function (str) {
-  return qs.parse(str, {comma: true})
-})
+  return qs.parse(str, { comma: true });
+});
 app.use(cors());
 app.use(express.json());
 app.use('/users', userRoutes);
