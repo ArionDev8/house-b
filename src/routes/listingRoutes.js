@@ -9,7 +9,6 @@ import {
   getOneListing,
   updateListing,
   deleteListing,
-  getAllNearListings,
   pagination,
   getFreeDates,
 } from '../controllers/listingController.js';
@@ -33,9 +32,9 @@ router.post(
   uploadImages,
 );
 router.get('/search', validate('query', searchSchema), searchListings);
-router.get('/:id', validate('params', ObjectIdParam), getFreeDates);
-router.get('/nearby', getAllNearListings);
 router.get('/yourListings', authenticateJWT, getAllYourListings);
+router.get('/:id', validate('params', ObjectIdParam), getFreeDates);
+
 router.get(
   '/:id',
   authenticateJWT,
