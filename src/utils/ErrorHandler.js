@@ -7,6 +7,7 @@ export class RealEstateErrors extends Error {
     super(msg);
     this.code = code;
     this.publicMsg = publicMsg;
+    this.message = msg;
   }
 
   static fromJoiError(error) {
