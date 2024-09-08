@@ -29,12 +29,11 @@ app.get('/health', (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  console.log('error','OOOOOOOOOOOOOOOOOOOOOOOOOOOOOO', err.code);
   
   if (err instanceof RealEstateErrors) {
     res.status(err.code);
     res.send({ message: err.publicMsg, error: true });
-    console.error(err.msg);
+    console.error(err.message);
 
     return;
   }
