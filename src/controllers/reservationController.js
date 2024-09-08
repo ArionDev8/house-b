@@ -1,14 +1,66 @@
 import mongoose from 'mongoose';
 import { Reservation } from '../models/Reservation.js';
+import { Listing } from '../models/Listing.js';
 import { RealEstateErrors } from '../utils/ErrorHandler.js';
 
 export const createReservation = async (req, res, next) => {
   try {
-    const reservation = new Reservation(req.body);
+    const { startDate, endDate } = req.body;
+    const { listingId } = req.params;
+
+    startDate.setUTCHours(0, 0, 0, 0);
+    endDate.setUTCHours(0, 0, 0, 0);
+
+    if (startDate.getTime() >= endDate.getTime()) {
+      return res.status(400).send({ message: 'Bad Request' });
+    }
+
+    const listing = await Listing.findById(listingId).lean();
+
+    if (req.user.id === listing.userId.toString()) {
+      return res
+        .status(403)
+        .send({
+          message:
+            'You are not authorized to make reservations for this listing.',
+        });
+    }
+
+    const existingReservations = await Reservation.find({
+      listingId,
+      $or: [
+        {
+          startDate: { $lte: endDate },
+          endDate: { $gte: startDate },
+        },
+        {
+          startDate: { $lte: endDate, $gte: startDate },
+          endDate: { $lte: endDate, $gte: startDate },
+        },
+      ],
+    });
+
+    if (existingReservations.length > 0) {
+      return res
+        .status(400)
+        .send({
+          message: 'Reservation dates overlap with an existing reservation',
+        });
+    }
+
+    const reservation = new Reservation({
+      startDate,
+      endDate,
+      listingId,
+    });
     await reservation.save();
 
-    const { _id, listingId, startDate, endDate } = reservation;
-    res.status(200).send({ id: _id, listingId, startDate, endDate });
+    res.status(200).send({
+      id: reservation._id,
+      listingId,
+      startDate: reservation.startDate,
+      endDate: reservation.endDate,
+    });
   } catch {
     next(new RealEstateErrors());
   }

@@ -196,10 +196,10 @@ export const newListingSchema = Joi.object({
 
 export const searchSchema = Joi.object({
   coordinates: Joi.array()
-    .items(Joi.number().required()) // [longitude, latitude]
+    .items(Joi.number().required())
     .length(2)
     .required(),
   title: Joi.string().min(4),
-  startDate: Joi.date().timestamp('unix'),
-  endDate: Joi.date().timestamp('unix'),
+  startDate: Joi.date().timestamp('unix').required(),
+  endDate: Joi.date().timestamp('unix').required(),
 }).required();

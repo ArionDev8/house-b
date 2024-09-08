@@ -40,8 +40,20 @@ export const searchListings = async (req, res, next) => {
   try {
     const { coordinates, title, startDate, endDate } = req.query;
 
-    if (startDate) startDate.setUTCHours(0, 0, 0, 0);
-    if (endDate) endDate.setUTCHours(0, 0, 0, 0);
+    startDate.setUTCHours(0, 0, 0, 0);
+    endDate.setUTCHours(0, 0, 0, 0);
+
+    if (startDate.getTime() <= new Date().setUTCHours(0, 0, 0, 0)) {
+      next(new RealEstateErrors(400, 'Date cannot be in the past'));
+      return;
+    }
+
+    if (endDate < startDate) {
+      next(
+        new RealEstateErrors(400, 'End date cannot be less than start date'),
+      );
+      return;
+    }
 
     const listingsAvailable = await Listing.aggregate([
       {
@@ -65,26 +77,33 @@ export const searchListings = async (req, res, next) => {
       },
       {
         $lookup: {
-          from: 'availabilities',
+          from: 'reservations',
           localField: '_id',
           foreignField: 'listingId',
           as: 'result',
         },
       },
-      // {
-      //   $unwind: {
-      //     path: '$result',
-      //     preserveNullAndEmptyArrays: false,
-      //   },
-      // },
+      {
+        $unwind: {
+          path: '$result',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
       {
         $match: {
-          'result.0': {$exists: true},
-          ...(startDate &&
-            endDate && {
-              'result.startDate': { $lte: startDate },
-              'result.endDate': { $gte: endDate },
-            }),
+          $or: [
+            { reservations: { $eq: [] } },
+            {
+              reservations: {
+                $not: {
+                  $elemMatch: {
+                    startDate: { $lt: endDate },
+                    endDate: { $gt: startDate },
+                  },
+                },
+              },
+            },
+          ],
         },
       },
     ]);
@@ -185,39 +204,6 @@ export const deleteListing = async (req, res, next) => {
   }
 };
 
-export const getAllNearListings = async (req, res, next) => {
-  const { lat, long, maxDistance = 1000 } = req.query;
-
-  if (!lat || !long) {
-    return res
-      .status(400)
-      .json({ error: 'Latitude and longitude are required' });
-  }
-
-  try {
-    const allNearListings = await Listing.find({
-      coordinates: {
-        $near: {
-          $geometry: {
-            type: 'Point',
-            coordinates: [parseFloat(long), parseFloat(lat)],
-          },
-          $maxDistance: maxDistance,
-        },
-      },
-    });
-
-    const filteredAllNearListings = allNearListings.filter(
-      (listing) => listing.isDeleted === false,
-    );
-    res.status(200).json(filteredAllNearListings);
-  } catch (error) {
-    next(
-      new RealEstateErrors(500, error.message, 'Failed to get nearby listings'),
-    );
-  }
-};
-
 export const pagination = async (req, res, next) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
@@ -230,5 +216,107 @@ export const pagination = async (req, res, next) => {
     res.json(movies);
   } catch (error) {
     next(new RealEstateErrors(error.message));
+  }
+};
+
+export const getFreeDates = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(404).send({ message: 'Please enter listingId' });
+    }
+
+    const now = new Date();
+    const year = now.getUTCFullYear();
+    const month = now.getUTCMonth();
+
+    const startOfMonth = new Date(Date.UTC(year, month, 1));
+    const endOfMonth = new Date(Date.UTC(year, month + 1, 0));
+
+    console.log('Start of Month:', startOfMonth.toISOString());
+    console.log('End of Month:', endOfMonth.toISOString());
+
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+    const startDate = today > startOfMonth ? today : startOfMonth;
+    console.log(startDate);
+
+    const result = await Listing.aggregate([
+      {
+        $match: {
+          isDeleted: false,
+        },
+      },
+      {
+        $lookup: {
+          from: 'reservations',
+          localField: '_id',
+          foreignField: 'listingId',
+          as: 'reservations',
+        },
+      },
+      {
+        $unwind: {
+          path: '$reservations',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          $or: [
+            { 'reservations.startDate': { $lte: endOfMonth } },
+            { 'reservations.endDate': { $gte: startDate } },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          reservations: {
+            $push: {
+              startDate: '$reservations.startDate',
+              endDate: '$reservations.endDate',
+            },
+          },
+        },
+      },
+    ]);
+
+    if (!result.length) {
+      return res.status(404).send({ message: 'Listing not found.' });
+    }
+
+    const reservations = result[0].reservations;
+
+    const allDatesInMonth = [];
+    for (let day = startDate.getDate(); day <= endOfMonth.getDate(); day++) {
+      console.log(day);
+
+      allDatesInMonth.push(
+        new Date(year, month, day).toISOString().split('T')[0],
+      );
+    }
+
+    const bookedDates = new Set();
+    reservations.forEach((reservation) => {
+      const start = new Date(reservation.startDate);
+      const end = new Date(reservation.endDate);
+
+      start.setUTCHours(0, 0, 0, 0);
+      end.setUTCHours(23, 59, 59, 999);
+
+      let currentDate = new Date(start);
+      while (currentDate <= end) {
+        bookedDates.add(currentDate.toISOString().split('T')[0]);
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    });
+
+    const freeDates = allDatesInMonth.filter((date) => !bookedDates.has(date));
+
+    res.status(200).send({ freeDates });
+  } catch (error) {
+    next(new RealEstateErrors(error.message || 'Failed to get free dates.'));
   }
 };
