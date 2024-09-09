@@ -18,12 +18,10 @@ export const createReservation = async (req, res, next) => {
     const listing = await Listing.findById(listingId).lean();
 
     if (req.user.id === listing.userId.toString()) {
-      return res
-        .status(403)
-        .send({
-          message:
-            'You are not authorized to make reservations for this listing.',
-        });
+      return res.status(403).send({
+        message:
+          'You are not authorized to make reservations for this listing.',
+      });
     }
 
     const existingReservations = await Reservation.find({
@@ -41,11 +39,9 @@ export const createReservation = async (req, res, next) => {
     });
 
     if (existingReservations.length > 0) {
-      return res
-        .status(400)
-        .send({
-          message: 'Reservation dates overlap with an existing reservation',
-        });
+      return res.status(400).send({
+        message: 'Reservation dates overlap with an existing reservation',
+      });
     }
 
     const reservation = new Reservation({

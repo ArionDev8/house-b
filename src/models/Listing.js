@@ -32,33 +32,33 @@ const listingsSchema = new Schema({
     },
   ],
 
-  // nrOfRooms: {
-  //   type: Number,
-  //   required: true,
-  // },
+  nrOfRooms: {
+    type: Number,
+    required: true,
+  },
 
-  // nrOfToilets: {
-  //   type: Number,
-  //   required: true,
-  // },
+  nrOfToilets: {
+    type: Number,
+    required: true,
+  },
 
   // elevator: {
   //   type: Boolean,
   //   required: true,
   // },
 
-  // buildingType: {
-  //   type: String,
-  //   enum: ['Apartament', 'Villa', 'Hotel', 'Office'],
-  //   required: true,
-  // },
+  buildingType: {
+    type: String,
+    enum: ['Apartament', 'Villa', 'Hotel', 'Office'],
+    required: true,
+  },
 
-  // amenities: [
-  //   {
-  //     type: String,
-  //     required: true,
-  //   },
-  // ],
+  amenities: [
+    {
+      type: String,
+      required: true,
+    },
+  ],
 
   price: {
     type: Number,
@@ -84,62 +84,62 @@ listingsSchema.index({ coordinates: '2dsphere' });
 
 export const Listing = mongoose.model('Listings', listingsSchema);
 
-// const houseAmenities = [
-//   'Netflix',
-//   'Wi-Fi',
-//   'Free Parking',
-//   'Pool',
-//   'Air Conditioning',
-//   'Laundry',
-//   'Balcony',
-// ];
+const houseAmenities = [
+  'Netflix',
+  'Wi-Fi',
+  'Free Parking',
+  'Pool',
+  'Air Conditioning',
+  'Laundry',
+  'Balcony',
+];
 
-// const hotelAmenities = [
-//   'Swimming pool',
-//   'Fitness center',
-//   'Spa treatments',
-//   'Restaurant and bar',
-//   'Room service',
-//   'Laundry service',
-//   'Wi-Fi',
-//   'Rooftop pool',
-//   'Private beach access',
-//   'In-room dining',
-//   'Number of Beds',
-//   'Number of Rooms',
-// ];
+const hotelAmenities = [
+  'Swimming pool',
+  'Fitness center',
+  'Spa treatments',
+  'Restaurant and bar',
+  'Room service',
+  'Laundry service',
+  'Wi-Fi',
+  'Rooftop pool',
+  'Private beach access',
+  'In-room dining',
+  'Number of Beds',
+  'Number of Rooms',
+];
 
-// const villasAmenities = [
-//   'Private pool',
-//   'Kitchen',
-//   'Laundry facilities',
-//   'Garden',
-//   'Barbecue grill',
-//   'Parking',
-//   'Home theater',
-//   'Game room',
-//   'Wine cellar',
-//   'Personal chef',
-//   'Guest house',
-//   'Number of Bathrooms',
-//   'Number of Rooms',
-//   'Panoramic View',
-// ];
+const villasAmenities = [
+  'Private pool',
+  'Kitchen',
+  'Laundry facilities',
+  'Garden',
+  'Barbecue grill',
+  'Parking',
+  'Home theater',
+  'Game room',
+  'Wine cellar',
+  'Personal chef',
+  'Guest house',
+  'Number of Bathrooms',
+  'Number of Rooms',
+  'Panoramic View',
+];
 
-// const officeAmenities = [
-//   'Meeting rooms',
-//   'Conference rooms',
-//   'Shared workspace',
-//   'Kitchenette',
-//   'Wi-Fi',
-//   'Copier/printer/scanner',
-//   'Reception area',
-//   'Panoramic views',
-//   'Café or restaurant',
-//   'Rooftop terrace',
-//   'Secure parking',
-//   'Number of Bathrooms',
-// ];
+const officeAmenities = [
+  'Meeting rooms',
+  'Conference rooms',
+  'Shared workspace',
+  'Kitchenette',
+  'Wi-Fi',
+  'Copier/printer/scanner',
+  'Reception area',
+  'Panoramic views',
+  'Café or restaurant',
+  'Rooftop terrace',
+  'Secure parking',
+  'Number of Bathrooms',
+];
 
 export const newListingSchema = Joi.object({
   coordinates: Joi.array()
@@ -155,39 +155,39 @@ export const newListingSchema = Joi.object({
       }),
     )
     .optional(),
-  // nrOfRooms: Joi.number().required(),
-  // nrOfToilets: Joi.number().required(),
+  nrOfRooms: Joi.number().required(),
+  nrOfToilets: Joi.number().required(),
   // elevator: Joi.boolean().required(),
-  // buildingType: Joi.string()
-  //   .valid('Apartament', 'Villa', 'Hotel', 'Office')
-  //   .required(),
-  // amenities: Joi.array()
-  //   .items(Joi.string().required())
-  //   .required()
-  //   .when('buildingType', {
-  //     is: 'Apartament',
-  //     then: Joi.array()
-  //       .items(Joi.string().valid(...houseAmenities))
-  //       .required(),
-  //   })
-  //   .when('buildingType', {
-  //     is: 'Hotel',
-  //     then: Joi.array()
-  //       .items(Joi.string().valid(...hotelAmenities))
-  //       .required(),
-  //   })
-  //   .when('buildingType', {
-  //     is: 'Villa',
-  //     then: Joi.array()
-  //       .items(Joi.string().valid(...villasAmenities))
-  //       .required(),
-  //   })
-  //   .when('buildingType', {
-  //     is: 'Office',
-  //     then: Joi.array()
-  //       .items(Joi.string().valid(...officeAmenities))
-  //       .required(),
-  //   }),
+  buildingType: Joi.string()
+    .valid('Apartament', 'Villa', 'Hotel', 'Office')
+    .required(),
+  amenities: Joi.array()
+    .items(Joi.string().required())
+    .required()
+    .when('buildingType', {
+      is: 'Apartament',
+      then: Joi.array()
+        .items(Joi.string().valid(...houseAmenities))
+        .required(),
+    })
+    .when('buildingType', {
+      is: 'Hotel',
+      then: Joi.array()
+        .items(Joi.string().valid(...hotelAmenities))
+        .required(),
+    })
+    .when('buildingType', {
+      is: 'Villa',
+      then: Joi.array()
+        .items(Joi.string().valid(...villasAmenities))
+        .required(),
+    })
+    .when('buildingType', {
+      is: 'Office',
+      then: Joi.array()
+        .items(Joi.string().valid(...officeAmenities))
+        .required(),
+    }),
   price: Joi.number().required(),
   // freeParking: Joi.boolean().required(),
   // balcony: Joi.boolean().required(),
@@ -195,10 +195,7 @@ export const newListingSchema = Joi.object({
 });
 
 export const searchSchema = Joi.object({
-  coordinates: Joi.array()
-    .items(Joi.number().required())
-    .length(2)
-    .required(),
+  coordinates: Joi.array().items(Joi.number().required()).length(2).required(),
   title: Joi.string().min(4),
   startDate: Joi.date().timestamp('unix').required(),
   endDate: Joi.date().timestamp('unix').required(),
