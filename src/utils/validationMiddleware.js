@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 export function validate(what, dto) {
   return async function (req, res, next) {
-    console.log(req.query);
+    // console.log(req.query);
     try {
       req[what] = await dto.validateAsync(req[what]);
       next();

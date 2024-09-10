@@ -13,7 +13,7 @@ import { ObjectIdParam } from '../utils/ObjectIdUtils.js';
 const router = express.Router();
 
 router.post(
-  '/',
+  '/:listingId',
   authenticateJWT,
   validate('body', newReviewSchema),
   createReview,

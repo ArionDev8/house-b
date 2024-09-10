@@ -1,9 +1,29 @@
 import mongoose from 'mongoose';
 import { Review } from '../models/Review.js';
+import { Reservation } from '../models/Reservation.js';
 import { RealEstateErrors } from '../utils/ErrorHandler.js';
 
 export const createReview = async (req, res, next) => {
   try {
+    const { listingId } = req.params;
+
+    const reservation = await Reservation.findOne({ listingId });
+
+    const dateForReview = new Date(
+      reservation.endDate.getTime() + 24 * 60 * 60 * 1000,
+    );
+    dateForReview.setUTCHours(0, 0, 0, 0);
+
+    const currentTime = new Date();
+    currentTime.setUTCHours(0, 0, 0, 0);
+
+    if (currentTime < dateForReview) {
+      return res.status(400).send({
+        message:
+          'You can only leave a review 24 hours after the reservation end date.',
+      });
+    }
+
     const review = new Review({
       ...req.body,
       userId: req.user.id,
