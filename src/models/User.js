@@ -20,10 +20,12 @@ const usersSchema = new Schema({
     type: String,
     required: true,
   },
-  favouriteListings: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Listings',
-  }]
+  favouriteListings: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Listings',
+    },
+  ],
 });
 
 export const User = mongoose.model('User', usersSchema);
