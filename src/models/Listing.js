@@ -49,7 +49,7 @@ const listingsSchema = new Schema({
 
   buildingType: {
     type: String,
-    enum: ['Apartament', 'Villa', 'Hotel', 'Office'],
+    enum: ['House', 'Hotel', 'Villa', 'Office'],
     required: true,
   },
 
