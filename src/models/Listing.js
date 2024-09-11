@@ -159,13 +159,13 @@ export const newListingSchema = Joi.object({
   // nrOfToilets: Joi.number().required(),
   // elevator: Joi.boolean().required(),
   buildingType: Joi.string()
-    .valid('Apartament', 'Villa', 'Hotel', 'Office')
+    .valid('House', 'Hotel', 'Villa', 'Office')
     .required(),
   amenities: Joi.array()
     .items(Joi.string().required())
     .required()
     .when('buildingType', {
-      is: 'Apartament',
+      is: 'House',
       then: Joi.array()
         .items(Joi.string().valid(...houseAmenities))
         .required(),

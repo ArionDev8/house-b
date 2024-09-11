@@ -20,12 +20,10 @@ const usersSchema = new Schema({
     type: String,
     required: true,
   },
-  role: {
-    type: String,
-    enum: ['user', 'admin'],
-    required: true,
-    default: 'user',
-  },
+  favouriteListings: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Listings',
+  }]
 });
 
 export const User = mongoose.model('User', usersSchema);
@@ -35,7 +33,6 @@ export const newUserSchema = Joi.object({
   lastName: Joi.string().max(50).required(),
   email: Joi.string().email().required(),
   password: Joi.string().min(6).max(255).required(),
-  role: Joi.string().valid('user', 'admin'),
 });
 
 export const updateUserSchema = Joi.object({
