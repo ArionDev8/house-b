@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
+import { Listing } from '../models/Listing.js';
 import { RealEstateErrors } from '../utils/ErrorHandler.js';
 
 export const createUser = async (req, res, next) => {
@@ -151,5 +152,33 @@ export const deleteUser = async (req, res, next) => {
   } catch (err) {
     console.error('Delete user error:', err.message);
     next(err);
+  }
+};
+
+export const addToFavorites = async (req, res,next) => {
+  try {
+    const { id } = req.user;
+    const { listingId } = req.params;
+
+    const listing = await Listing.findById(listingId);
+    if (!listing) {
+      return res.status(404).json({ message: 'Listing not found' });
+    }
+
+    const user = await User.findById(id);    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (user.favouriteListings.includes(listingId)) {
+      return res.status(400).json({ message: 'Listing is already in favorites' });
+    }
+
+    user.favouriteListings.push(listingId);
+    await user.save();
+
+    res.status(200).json({ message: 'Listing added to favorites', favouriteListings: user.favouriteListings });
+  } catch {
+    next (new RealEstateErrors());
   }
 };
