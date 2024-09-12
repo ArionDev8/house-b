@@ -195,8 +195,14 @@ export const newListingSchema = Joi.object({
 });
 
 export const searchSchema = Joi.object({
-  coordinates: Joi.array().items(Joi.number().required()).length(2).required(),
-  title: Joi.string().min(4),
+  // coordinates: Joi.array().items(Joi.number().required()).length(2).required(),
+  // title: Joi.string().min(4),
+  city: Joi.string().required(),
   startDate: Joi.date().timestamp('unix').required(),
   endDate: Joi.date().timestamp('unix').required(),
+  buildingType: Joi.string(),
+  amenities: Joi.alternatives()
+    .try(Joi.array().items(Joi.string()), Joi.string())
+    .default([])
+    .custom((value) => (typeof value === 'string' ? [value] : value)),
 }).required();
