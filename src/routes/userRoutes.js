@@ -7,7 +7,7 @@ import {
   deleteUser,
   loginUser,
   getMe,
-  addToFavorites
+  addToFavorites,
 } from '../controllers/userController.js';
 import { validate, authenticateJWT } from '../utils/validationMiddleware.js';
 import {

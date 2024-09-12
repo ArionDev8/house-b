@@ -38,7 +38,27 @@ export const uploadImages = async (req, res, next) => {
 
 export const searchListings = async (req, res, next) => {
   try {
-    const { coordinates, title, startDate, endDate } = req.query;
+    const { city, startDate, endDate, buildingType, amenities } = req.query;
+    const coordinates = [];
+    var requestOptions = {
+      method: 'GET',
+    };
+
+    const response = await fetch(
+      `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(city)}&lang=en&type=city&format=json&apiKey=12bcdbae70604c2fa5b82073ff4fcbed`,
+      requestOptions,
+    );
+
+    if (!response.ok) {
+      return next(new RealEstateErrors(400, 'Failed to fetch location data'));
+    }
+
+    const data = await response.json();
+
+    const lat = data.results[0].lat;
+    const lon = data.results[0].lon;
+
+    coordinates.push(lat, lon);
 
     startDate.setUTCHours(0, 0, 0, 0);
     endDate.setUTCHours(0, 0, 0, 0);
@@ -108,13 +128,28 @@ export const searchListings = async (req, res, next) => {
       },
     ]);
 
-    res
-      .status(200)
-      .json(
-        listingsAvailable.filter((r) =>
-          title ? r.title.includes(title) : true,
-        ),
+    let filteredListings = listingsAvailable;
+
+    if (buildingType) {
+      filteredListings = filteredListings.filter(
+        (building) => building.buildingType === buildingType,
       );
+    }
+
+    let amenitiesArray = [];
+    if (typeof amenities === 'string') {
+      amenitiesArray = [amenities];
+    } else if (Array.isArray(amenities)) {
+      amenitiesArray = amenities;
+    }
+
+    if (amenitiesArray.length > 0) {
+      filteredListings = filteredListings.filter((building) =>
+        amenitiesArray.every((amenity) => building.amenities.includes(amenity)),
+      );
+    }
+
+    res.status(200).json(filteredListings);
   } catch (err) {
     console.log(err);
     next(new RealEstateErrors());
