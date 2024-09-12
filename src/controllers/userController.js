@@ -179,12 +179,10 @@ export const addToFavorites = async (req, res, next) => {
     user.favouriteListings.push(listingId);
     await user.save();
 
-    res
-      .status(200)
-      .json({
-        message: 'Listing added to favorites',
-        favouriteListings: user.favouriteListings,
-      });
+    res.status(200).json({
+      message: 'Listing added to favorites',
+      favouriteListings: user.favouriteListings,
+    });
   } catch {
     next(new RealEstateErrors());
   }
