@@ -138,7 +138,7 @@ export const searchListings = async (req, res, next) => {
 
     let amenitiesArray = [];
     if (typeof amenities === 'string') {
-      amenitiesArray = [amenities];
+      amenitiesArray = amenities.split(',');
     } else if (Array.isArray(amenities)) {
       amenitiesArray = amenities;
     }
