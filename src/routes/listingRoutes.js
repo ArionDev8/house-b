@@ -34,7 +34,11 @@ router.post(
 router.get('/search', validate('query', searchSchema), searchListings);
 router.get('/yourListings', authenticateJWT, getAllYourListings);
 router.get('/available/:listingId', validate('params', ObjectIdParam), getFreeDates);
-
+router.get(
+  '/noauth/:id',
+  validate('params', ObjectIdParam),
+  getOneListing,
+);
 router.get(
   '/:id',
   authenticateJWT,
