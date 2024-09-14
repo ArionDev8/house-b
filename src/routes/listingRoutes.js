@@ -33,7 +33,7 @@ router.post(
 );
 router.get('/search', validate('query', searchSchema), searchListings);
 router.get('/yourListings', authenticateJWT, getAllYourListings);
-router.get('/:listingId', validate('params', ObjectIdParam), getFreeDates);
+router.get('/available/:listingId', validate('params', ObjectIdParam), getFreeDates);
 
 router.get(
   '/:id',

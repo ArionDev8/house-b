@@ -256,9 +256,9 @@ export const pagination = async (req, res, next) => {
 
 export const getFreeDates = async (req, res, next) => {
   try {
-    const { id: listingId } = req.params;
+    const { id } = req.params;
 
-    if (!listingId) {
+    if (!id) {
       return res.status(404).send({ message: 'Please enter listingId' });
     }
 
