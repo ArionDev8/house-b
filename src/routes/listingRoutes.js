@@ -11,6 +11,7 @@ import {
   deleteListing,
   pagination,
   getFreeDates,
+  getOneListingWithoutAuth,
 } from '../controllers/listingController.js';
 import { validate, authenticateJWT } from '../utils/validationMiddleware.js';
 import { newListingSchema, searchSchema } from '../models/Listing.js';
@@ -33,11 +34,15 @@ router.post(
 );
 router.get('/search', validate('query', searchSchema), searchListings);
 router.get('/yourListings', authenticateJWT, getAllYourListings);
-router.get('/available/:listingId', validate('params', ObjectIdParam), getFreeDates);
+router.get(
+  '/available/:listingId',
+  validate('params', ObjectIdParam),
+  getFreeDates,
+);
 router.get(
   '/noauth/:id',
   validate('params', ObjectIdParam),
-  getOneListing,
+  getOneListingWithoutAuth,
 );
 router.get(
   '/:id',
