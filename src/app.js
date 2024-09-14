@@ -28,6 +28,7 @@ app.get('/health', (req, res) => {
   }
 });
 
+app.use('/static', express.static('src/Images'));
 app.use((err, req, res, _next) => {
   if (err instanceof RealEstateErrors) {
     res.status(err.code);
