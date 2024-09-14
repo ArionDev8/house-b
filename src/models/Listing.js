@@ -86,7 +86,7 @@ export const Listing = mongoose.model('Listings', listingsSchema);
 
 const houseAmenities = [
   'Netflix',
-  'Wi-Fi',
+  'Wi Fi',
   'Free Parking',
   'Pool',
   'Air Conditioning',
@@ -101,10 +101,10 @@ const hotelAmenities = [
   'Restaurant and bar',
   'Room service',
   'Laundry service',
-  'Wi-Fi',
+  'Wi Fi',
   'Rooftop pool',
   'Private beach access',
-  'In-room dining',
+  'In room dining',
   'Number of Beds',
   'Number of Rooms',
 ];
@@ -131,7 +131,7 @@ const officeAmenities = [
   'Conference rooms',
   'Shared workspace',
   'Kitchenette',
-  'Wi-Fi',
+  'Wi Fi',
   'Copier/printer/scanner',
   'Reception area',
   'Panoramic views',
