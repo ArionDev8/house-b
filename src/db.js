@@ -10,3 +10,5 @@ mongoose
   .catch((error) => {
     console.error('Connection error:', error);
   });
+
+mongoose.set('debug', true);

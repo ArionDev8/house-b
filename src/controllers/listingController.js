@@ -38,7 +38,17 @@ export const uploadImages = async (req, res, next) => {
 
 export const searchListings = async (req, res, next) => {
   try {
-    const { city, startDate, endDate, buildingType, amenities } = req.query;
+    const {
+      city,
+      startDate,
+      endDate,
+      nrOfRooms,
+      nrOfBeds,
+      buildingType,
+      amenities,
+      minPrice,
+      maxPrice,
+    } = req.query;
     const coordinates = [];
     var requestOptions = {
       method: 'GET',
@@ -75,6 +85,35 @@ export const searchListings = async (req, res, next) => {
       return;
     }
 
+    const match = {
+      isDeleted: false,
+      buildingType,
+      nrOfRooms: {
+        $gte: nrOfRooms,
+      },
+      nrOfBeds: {
+        $gte: nrOfBeds,
+      },
+      $and: [
+        {
+          price: {
+            $gte: minPrice,
+          },
+        },
+        {
+          price: {
+            $lte: maxPrice,
+          },
+        },
+      ],
+    };
+
+    if (amenities && amenities.length > 0) {
+      match.amenities = {
+        $all: amenities,
+      };
+    }
+
     const listingsAvailable = await Listing.aggregate([
       {
         $geoNear: {
@@ -91,9 +130,7 @@ export const searchListings = async (req, res, next) => {
         },
       },
       {
-        $match: {
-          isDeleted: false,
-        },
+        $match: match,
       },
       {
         $lookup: {
@@ -128,28 +165,7 @@ export const searchListings = async (req, res, next) => {
       },
     ]);
 
-    let filteredListings = listingsAvailable;
-
-    if (buildingType) {
-      filteredListings = filteredListings.filter(
-        (building) => building.buildingType === buildingType,
-      );
-    }
-
-    let amenitiesArray = [];
-    if (typeof amenities === 'string') {
-      amenitiesArray = amenities.split(',');
-    } else if (Array.isArray(amenities)) {
-      amenitiesArray = amenities;
-    }
-
-    if (amenitiesArray.length > 0) {
-      filteredListings = filteredListings.filter((building) =>
-        amenitiesArray.every((amenity) => building.amenities.includes(amenity)),
-      );
-    }
-
-    res.status(200).json(filteredListings);
+    res.status(200).json(listingsAvailable);
   } catch (err) {
     console.log(err);
     next(new RealEstateErrors());

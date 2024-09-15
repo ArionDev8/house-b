@@ -32,15 +32,15 @@ const listingsSchema = new Schema({
     },
   ],
 
-  // nrOfRooms: {
-  //   type: Number,
-  //   required: true,
-  // },
+  nrOfRooms: {
+    type: Number,
+    required: true,
+  },
 
-  // nrOfToilets: {
-  //   type: Number,
-  //   required: true,
-  // },
+  nrOfBeds: {
+    type: Number,
+    required: true,
+  },
 
   // elevator: {
   //   type: Boolean,
@@ -105,8 +105,6 @@ const hotelAmenities = [
   'Rooftop pool',
   'Private beach access',
   'In room dining',
-  'Number of Beds',
-  'Number of Rooms',
 ];
 
 const villasAmenities = [
@@ -138,7 +136,6 @@ const officeAmenities = [
   'Café or restaurant',
   'Rooftop terrace',
   'Secure parking',
-  'Number of Bathrooms',
 ];
 
 export const newListingSchema = Joi.object({
@@ -155,8 +152,8 @@ export const newListingSchema = Joi.object({
       }),
     )
     .optional(),
-  // nrOfRooms: Joi.number().required(),
-  // nrOfToilets: Joi.number().required(),
+  nrOfRooms: Joi.number().required(),
+  nrOfBeds: Joi.number().required(),
   // elevator: Joi.boolean().required(),
   buildingType: Joi.string()
     .valid('House', 'Hotel', 'Villa', 'Office')
@@ -200,9 +197,10 @@ export const searchSchema = Joi.object({
   city: Joi.string().required(),
   startDate: Joi.date().timestamp('unix').required(),
   endDate: Joi.date().timestamp('unix').required(),
+  minPrice: Joi.number().required(),
+  maxPrice: Joi.number().required(),
+  nrOfRooms: Joi.number().required(),
+  nrOfBeds: Joi.number().required(),
   buildingType: Joi.string(),
-  amenities: Joi.alternatives()
-    .try(Joi.array().items(Joi.string()), Joi.string())
-    .default([])
-    .custom((value) => (typeof value === 'string' ? [value] : value)),
+  amenities: Joi.array().items(Joi.string()),
 }).required();
