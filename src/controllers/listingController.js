@@ -70,12 +70,14 @@ export const searchListings = async (req, res, next) => {
 
     coordinates.push(lat, lon);
 
-    startDate.set(0, 0, 0, 0);
+    startDate.setUTCHours(0, 0, 0, 0);
     endDate.setUTCHours(0, 0, 0, 0);
 
-    console.log('startDate: ' + startDate, 'endDate' + endDate);
+    const currentDate = new Date();
 
-    if (startDate.getTime() <= new Date().setUTCHours(0, 0, 0, 0)) {
+    currentDate.setUTCHours(0, 0, 0, 0);
+
+    if (startDate.getTime() <= currentDate) {
       next(new RealEstateErrors(400, 'Date cannot be in the past'));
       return;
     }
