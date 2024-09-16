@@ -197,10 +197,13 @@ export const searchSchema = Joi.object({
   city: Joi.string().required(),
   startDate: Joi.date().timestamp('unix').required(),
   endDate: Joi.date().timestamp('unix').required(),
-  minPrice: Joi.number().required(),
-  maxPrice: Joi.number().required(),
-  nrOfRooms: Joi.number().required(),
-  nrOfBeds: Joi.number().required(),
+  maxPrice: Joi.number(),
+  minPrice: Joi.number(),
+  nrOfRooms: Joi.number(),
+  nrOfBeds: Joi.number(),
   buildingType: Joi.string(),
-  amenities: Joi.array().items(Joi.string()),
+  amenities: Joi.alternatives().try(
+    Joi.array().items(Joi.string()),
+    Joi.string(),
+  ),
 }).required();

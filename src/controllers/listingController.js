@@ -70,8 +70,10 @@ export const searchListings = async (req, res, next) => {
 
     coordinates.push(lat, lon);
 
-    startDate.setUTCHours(0, 0, 0, 0);
+    startDate.set(0, 0, 0, 0);
     endDate.setUTCHours(0, 0, 0, 0);
+
+    console.log('startDate: ' + startDate, 'endDate' + endDate);
 
     if (startDate.getTime() <= new Date().setUTCHours(0, 0, 0, 0)) {
       next(new RealEstateErrors(400, 'Date cannot be in the past'));
@@ -110,7 +112,7 @@ export const searchListings = async (req, res, next) => {
 
     if (amenities && amenities.length > 0) {
       match.amenities = {
-        $all: amenities,
+        $all: [amenities],
       };
     }
 
