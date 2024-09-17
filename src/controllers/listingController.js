@@ -31,8 +31,8 @@ export const uploadImages = async (req, res, next) => {
     await listing.save();
 
     res.status(200).send({ message: 'Images uploaded successfully', listing });
-  } catch {
-    next(new RealEstateErrors());
+  } catch (error) {
+    next(new RealEstateErrors(error));
   }
 };
 
