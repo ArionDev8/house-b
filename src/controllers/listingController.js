@@ -147,7 +147,7 @@ export const searchListings = async (req, res, next) => {
       {
         $unwind: {
           path: '$result',
-          preserveNullAndEmptyArrays: true,
+          preserveNullAndEmptyArrays: false,
         },
       },
       {
