@@ -145,12 +145,6 @@ export const searchListings = async (req, res, next) => {
         },
       },
       {
-        $unwind: {
-          path: '$result',
-          preserveNullAndEmptyArrays: false,
-        },
-      },
-      {
         $match: {
           $or: [
             { reservations: { $eq: [] } },
@@ -166,6 +160,15 @@ export const searchListings = async (req, res, next) => {
             },
           ],
         },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          listing: { $first: '$$ROOT' },
+        },
+      },
+      {
+        $replaceRoot: { newRoot: '$listing' },
       },
     ]);
 
