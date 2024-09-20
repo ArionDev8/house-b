@@ -33,10 +33,7 @@ router.post(
   upload.array('photos', 5),
   uploadImages,
 );
-router.delete('/:listingId/images/:id',
-  authenticateJWT,
-  deleteImage,
-);
+router.delete('/:listingId/images/:id', authenticateJWT, deleteImage);
 router.get('/search', validate('query', searchSchema), searchListings);
 router.get('/yourListings', authenticateJWT, getAllYourListings);
 router.get(

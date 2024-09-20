@@ -55,7 +55,7 @@ export const deleteImage = async (req, res, next) => {
     listing.images.filter((image) => image.img !== imageId);
     await listing.save();
 
-    res.json({message: 'Deleted successfully'});
+    res.json({ message: 'Deleted successfully' });
   } catch (error) {
     next(error);
   }
@@ -102,7 +102,7 @@ export const searchListings = async (req, res, next) => {
 
     currentDate.setUTCHours(0, 0, 0, 0);
 
-    if (startDate.getTime() <= currentDate) {
+    if (startDate.getTime() < currentDate) {
       next(new RealEstateErrors(400, 'Date cannot be in the past'));
       return;
     }
