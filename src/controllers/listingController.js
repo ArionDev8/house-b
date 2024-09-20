@@ -166,7 +166,7 @@ export const searchListings = async (req, res, next) => {
           from: 'reservations',
           localField: '_id',
           foreignField: 'listingId',
-          as: 'result',
+          as: 'reservations',
         },
       },
       {
