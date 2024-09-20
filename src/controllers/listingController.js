@@ -420,3 +420,31 @@ export const getFreeDates = async (req, res, next) => {
     next(new RealEstateErrors(error.message || 'Failed to get free dates.'));
   }
 };
+
+export const getOwnerOfListing = async (req, res, next) => {
+  try {
+    const { listingId } = req.params;
+
+    const listing = await Listing.findById(listingId).populate(
+      'userId',
+      'firstName lastName email',
+    );
+
+    if (!listing) {
+      throw new RealEstateErrors(404, 'Listing not found', 'Listing not found');
+    }
+
+    const owner = listing.userId;
+
+    return res.status(200).json({
+      listing,
+      owner: {
+        firstName: owner.firstName,
+        lastName: owner.lastName,
+        email: owner.email,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -13,6 +13,7 @@ import {
   getFreeDates,
   getOneListingWithoutAuth,
   deleteImage,
+  getOwnerOfListing,
 } from '../controllers/listingController.js';
 import { validate, authenticateJWT } from '../utils/validationMiddleware.js';
 import { newListingSchema, searchSchema } from '../models/Listing.js';
@@ -41,6 +42,7 @@ router.get(
   validate('params', ObjectIdParam),
   getFreeDates,
 );
+router.get('/:listingId/owner', authenticateJWT, getOwnerOfListing);
 router.get(
   '/noauth/:id',
   validate('params', ObjectIdParam),
