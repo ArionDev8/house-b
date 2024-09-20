@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { Listing } from '../models/Listing.js';
 import { RealEstateErrors } from '../utils/ErrorHandler.js';
+import { unlink } from 'fs/promises';
 
 export const createListing = async (req, res, next) => {
   try {
@@ -33,6 +34,30 @@ export const uploadImages = async (req, res, next) => {
     res.status(200).send({ message: 'Images uploaded successfully', listing });
   } catch (error) {
     next(new RealEstateErrors(error));
+  }
+};
+
+export const deleteImage = async (req, res, next) => {
+  try {
+    const { id: userId } = req.user;
+    const { id: imageId, listingId } = req.params;
+
+    const listing = await Listing.findOne({
+      _id: new mongoose.Types.ObjectId(listingId),
+      userId: new mongoose.Types.ObjectId(userId),
+      'images.img': imageId,
+    });
+    if (!listing) {
+      throw new RealEstateErrors(404, 'Listing not found', 'Listing not found');
+    }
+
+    await unlink(`./src/Images/${imageId}`);
+    listing.images.filter((image) => image.img !== imageId);
+    await listing.save();
+
+    res.json({message: 'Deleted successfully'});
+  } catch (error) {
+    next(error);
   }
 };
 
