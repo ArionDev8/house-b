@@ -12,6 +12,7 @@ import {
   pagination,
   getFreeDates,
   getOneListingWithoutAuth,
+  deleteImage,
 } from '../controllers/listingController.js';
 import { validate, authenticateJWT } from '../utils/validationMiddleware.js';
 import { newListingSchema, searchSchema } from '../models/Listing.js';
@@ -32,6 +33,7 @@ router.post(
   upload.array('photos', 5),
   uploadImages,
 );
+router.delete('/:listingId/images/:id', authenticateJWT, deleteImage);
 router.get('/search', validate('query', searchSchema), searchListings);
 router.get('/yourListings', authenticateJWT, getAllYourListings);
 router.get(
