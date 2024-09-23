@@ -9,6 +9,11 @@ const reservationsSchema = new Schema({
     required: true,
   },
 
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  },
+
   startDate: {
     type: Date,
     required: true,

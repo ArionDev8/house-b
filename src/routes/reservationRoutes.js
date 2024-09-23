@@ -5,6 +5,7 @@ import {
   updateReservation,
   deleteReservation,
   getReservationsByListing,
+  getAllReservationsOfAUser,
 } from '../controllers/reservationController.js';
 import { validate, authenticateJWT } from '../utils/validationMiddleware.js';
 import {
@@ -20,6 +21,11 @@ router.post(
   authenticateJWT,
   validate('body', newReservationSchema),
   createReservation,
+);
+router.get(
+  '/allReservationsOfAUser',
+  authenticateJWT,
+  getAllReservationsOfAUser,
 );
 router.get('/', authenticateJWT, getAllReservations);
 router.get('/:listingId', authenticateJWT, getReservationsByListing);

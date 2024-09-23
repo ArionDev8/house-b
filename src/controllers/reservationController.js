@@ -44,16 +44,19 @@ export const createReservation = async (req, res, next) => {
       });
     }
 
+    const userId = req.user.id;
     const reservation = new Reservation({
       startDate,
       endDate,
       listingId,
+      userId,
     });
     await reservation.save();
 
     res.status(200).send({
       id: reservation._id,
       listingId,
+      userId,
       startDate: reservation.startDate,
       endDate: reservation.endDate,
     });
@@ -162,6 +165,23 @@ export const getReservationsByListing = async (req, res, next) => {
       data: filteredReservations,
     });
   } catch {
+    next(new RealEstateErrors());
+  }
+};
+
+export const getAllReservationsOfAUser = async (req, res, next) => {
+  const { id } = req.user;
+
+  try {
+    const reservations = await Reservation.find({ userId: id });
+
+    if (!reservations) {
+      res.status(404).send('No reservations found.');
+    }
+
+    res.status(200).send(reservations);
+  } catch (error) {
+    console.error('Error fetching reservations:', error);
     next(new RealEstateErrors());
   }
 };
