@@ -11,6 +11,10 @@ export const createReservation = async (req, res, next) => {
     startDate.setUTCHours(0, 0, 0, 0);
     endDate.setUTCHours(0, 0, 0, 0);
 
+    const timeDifference = endDate.getTime() - startDate.getTime();
+
+    const daysDifference = timeDifference / (1000 * 3600 * 24);
+
     if (startDate.getTime() >= endDate.getTime()) {
       return res.status(400).send({ message: 'Bad Request' });
     }
@@ -44,12 +48,14 @@ export const createReservation = async (req, res, next) => {
       });
     }
 
+    const totalPrice = daysDifference * listing.price;
     const userId = req.user.id;
     const reservation = new Reservation({
       startDate,
       endDate,
       listingId,
       userId,
+      totalPrice,
     });
     await reservation.save();
 
@@ -59,6 +65,7 @@ export const createReservation = async (req, res, next) => {
       userId,
       startDate: reservation.startDate,
       endDate: reservation.endDate,
+      totalPrice: totalPrice,
     });
   } catch {
     next(new RealEstateErrors());
@@ -173,13 +180,33 @@ export const getAllReservationsOfAUser = async (req, res, next) => {
   const { id } = req.user;
 
   try {
-    const reservations = await Reservation.find({ userId: id });
+    const userObjectId = new mongoose.Types.ObjectId(id);
+    const allReservations = await Listing.aggregate([
+      {
+        $lookup: {
+          from: 'reservations',
+          localField: '_id',
+          foreignField: 'listingId',
+          as: 'reservations',
+        },
+      },
+      {
+        $unwind: '$reservations',
+      },
+      {
+        $match: {
+          'reservations.userId': userObjectId,
+        },
+      },
+    ]);
 
-    if (!reservations) {
-      res.status(404).send('No reservations found.');
+    console.log(allReservations);
+
+    if (!allReservations) {
+      res.status(404).send({ message: 'No reservations made' });
     }
 
-    res.status(200).send(reservations);
+    res.status(200).json(allReservations);
   } catch (error) {
     console.error('Error fetching reservations:', error);
     next(new RealEstateErrors());

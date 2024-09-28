@@ -207,3 +207,30 @@ export const searchSchema = Joi.object({
     Joi.string(),
   ),
 }).required();
+
+export const updateListingSchema = Joi.object({
+  title: Joi.string(),
+  address: Joi.string(),
+  nrOfRooms: Joi.number(),
+  nrOfBeds: Joi.number(),
+  buildingType: Joi.string().valid('House', 'Hotel', 'Villa', 'Office'),
+  amenities: Joi.array()
+    .items(Joi.string().required())
+    .when('buildingType', {
+      is: 'House',
+      then: Joi.array().items(Joi.string().valid(...houseAmenities)),
+    })
+    .when('buildingType', {
+      is: 'Hotel',
+      then: Joi.array().items(Joi.string().valid(...hotelAmenities)),
+    })
+    .when('buildingType', {
+      is: 'Villa',
+      then: Joi.array().items(Joi.string().valid(...villasAmenities)),
+    })
+    .when('buildingType', {
+      is: 'Office',
+      then: Joi.array().items(Joi.string().valid(...officeAmenities)),
+    }),
+  price: Joi.number(),
+}).required();

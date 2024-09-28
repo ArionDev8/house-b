@@ -204,6 +204,22 @@ export const searchListings = async (req, res, next) => {
   }
 };
 
+export const getRandomListings = async (_, res, next) => {
+  try {
+    const randomListings = await Listing.aggregate([
+      {
+        $sample: {
+          size: 7,
+        },
+      },
+    ]);
+
+    res.status(200).json(randomListings);
+  } catch (err) {
+    next(new RealEstateErrors(err));
+  }
+};
+
 export const getAllYourListings = async (req, res, next) => {
   try {
     const listings = await Listing.find({ userId: req.user.id });

@@ -14,9 +14,14 @@ import {
   getOneListingWithoutAuth,
   deleteImage,
   getOwnerOfListing,
+  getRandomListings,
 } from '../controllers/listingController.js';
 import { validate, authenticateJWT } from '../utils/validationMiddleware.js';
-import { newListingSchema, searchSchema } from '../models/Listing.js';
+import {
+  newListingSchema,
+  searchSchema,
+  updateListingSchema,
+} from '../models/Listing.js';
 import { ObjectIdParam } from '../utils/ObjectIdUtils.js';
 
 const router = express.Router();
@@ -35,6 +40,7 @@ router.post(
   uploadImages,
 );
 router.delete('/:listingId/images/:id', authenticateJWT, deleteImage);
+router.get('/random', getRandomListings);
 router.get('/search', validate('query', searchSchema), searchListings);
 router.get('/yourListings', authenticateJWT, getAllYourListings);
 router.get(
@@ -58,6 +64,7 @@ router.put(
   '/:id',
   authenticateJWT,
   validate('params', ObjectIdParam),
+  validate('body', updateListingSchema),
   updateListing,
 );
 router.delete(
