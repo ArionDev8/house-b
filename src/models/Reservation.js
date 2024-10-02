@@ -24,6 +24,10 @@ const reservationsSchema = new Schema({
     required: true,
   },
 
+  totalPrice: {
+    type: Number,
+  },
+
   isDeleted: {
     type: Boolean,
     default: false,

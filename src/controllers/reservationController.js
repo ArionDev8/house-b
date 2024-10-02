@@ -65,7 +65,7 @@ export const createReservation = async (req, res, next) => {
       userId,
       startDate: reservation.startDate,
       endDate: reservation.endDate,
-      totalPrice: totalPrice,
+      totalPrice: reservation.totalPrice,
     });
   } catch {
     next(new RealEstateErrors());
