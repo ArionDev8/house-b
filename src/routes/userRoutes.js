@@ -35,11 +35,15 @@ router.put(
   updateUser,
 );
 router.delete(
+  '/remove-from-favourites/:listingId',
+  authenticateJWT,
+  removeFromFavorites,
+);
+router.delete(
   '/:id',
   authenticateJWT,
   validate('params', ObjectIdParam),
   deleteUser,
 );
-router.delete('/:id', authenticateJWT, removeFromFavorites);
 
 export default router;
