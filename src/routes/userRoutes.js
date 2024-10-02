@@ -26,7 +26,7 @@ router.post('/login', validate('body', loginUserSchema), loginUser);
 router.post('/add-to-favorites/:listingId', authenticateJWT, addToFavorites);
 router.get('/me', authenticateJWT, getMe);
 router.get('/', getAllUsers);
-router.get('/allFavorites', getFavoriteListings);
+router.get('/allFavorites', authenticateJWT, getFavoriteListings);
 router.get('/:id', getUserById);
 router.put(
   '/',
