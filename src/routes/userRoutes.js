@@ -8,6 +8,8 @@ import {
   loginUser,
   getMe,
   addToFavorites,
+  removeFromFavorites,
+  getFavoriteListings,
 } from '../controllers/userController.js';
 import { validate, authenticateJWT } from '../utils/validationMiddleware.js';
 import {
@@ -24,6 +26,7 @@ router.post('/login', validate('body', loginUserSchema), loginUser);
 router.post('/add-to-favorites/:listingId', authenticateJWT, addToFavorites);
 router.get('/me', authenticateJWT, getMe);
 router.get('/', getAllUsers);
+router.get('/allFavorites', getFavoriteListings);
 router.get('/:id', getUserById);
 router.put(
   '/',
@@ -37,5 +40,6 @@ router.delete(
   validate('params', ObjectIdParam),
   deleteUser,
 );
+router.delete('/:id', authenticateJWT, removeFromFavorites);
 
 export default router;

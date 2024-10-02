@@ -187,3 +187,53 @@ export const addToFavorites = async (req, res, next) => {
     next(new RealEstateErrors());
   }
 };
+
+export const removeFromFavorites = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+    const { listingId } = req.params;
+
+    const listing = await Listing.findById(listingId);
+    if (!listing) {
+      return res.status(404).json({ message: 'Listing not found' });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const listingIndex = user.favouriteListings.indexOf(listingId);
+    if (listingIndex === -1) {
+      return res.status(400).json({ message: 'Listing is not in favorites' });
+    }
+
+    user.favouriteListings.splice(listingIndex, 1);
+    await user.save();
+
+    res.status(200).json({
+      message: 'Listing removed from favorites',
+      favouriteListings: user.favouriteListings,
+    });
+  } catch {
+    next(new RealEstateErrors());
+  }
+};
+
+export const getFavoriteListings = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+
+    const user = await User.findById(id).populate('favouriteListings');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({
+      message: 'Favorite listings retrieved successfully',
+      favouriteListings: user.favouriteListings,
+    });
+  } catch {
+    next(new RealEstateErrors());
+  }
+};
