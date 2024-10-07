@@ -212,3 +212,43 @@ export const getAllReservationsOfAUser = async (req, res, next) => {
     next(new RealEstateErrors());
   }
 };
+
+export const getOneReservationOfAUser = async (req, res, next) => {
+  const { id } = req.user;
+  const { listingId } = req.params;
+  try {
+    const userObjectId = new mongoose.Types.ObjectId(id);
+    const reservation = await Listing.aggregate([
+      {
+        $match: { _id: new mongoose.Types.ObjectId(listingId) },
+      },
+      {
+        $lookup: {
+          from: 'reservations',
+          localField: '_id',
+          foreignField: 'listingId',
+          as: 'reservations',
+        },
+      },
+      {
+        $unwind: '$reservations',
+      },
+      {
+        $match: {
+          'reservations.userId': userObjectId,
+        },
+      },
+    ]);
+
+    console.log(reservation);
+
+    if (reservation.length === 0) {
+      res.status(404).send({ message: 'No reservation found! ' });
+    }
+
+    res.status(200).json(reservation);
+  } catch (error) {
+    console.error('Error fetching reservation:', error);
+    next(new RealEstateErrors());
+  }
+};

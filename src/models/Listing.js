@@ -39,7 +39,6 @@ const listingsSchema = new Schema({
 
   nrOfBeds: {
     type: Number,
-    required: true,
   },
 
   // elevator: {
@@ -153,7 +152,7 @@ export const newListingSchema = Joi.object({
     )
     .optional(),
   nrOfRooms: Joi.number().required(),
-  nrOfBeds: Joi.number().required(),
+  nrOfBeds: Joi.number(),
   // elevator: Joi.boolean().required(),
   buildingType: Joi.string()
     .valid('House', 'Hotel', 'Villa', 'Office')
