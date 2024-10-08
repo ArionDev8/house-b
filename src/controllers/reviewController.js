@@ -41,14 +41,14 @@ export const getAllReviews = async (req, res, next) => {
   try {
     const reviews = await Review.aggregate([
       {
-        $match: {}, 
+        $match: {},
       },
       {
         $lookup: {
-          from: 'listings', 
+          from: 'listings',
           localField: 'listingId',
-          foreignField: '_id', 
-          as: 'listingInfo', 
+          foreignField: '_id',
+          as: 'listingInfo',
         },
       },
       {
@@ -62,7 +62,6 @@ export const getAllReviews = async (req, res, next) => {
     next(new RealEstateErrors());
   }
 };
-
 
 export const updateReview = async (req, res, next) => {
   const { id } = req.params;
