@@ -30,7 +30,8 @@ export const createReview = async (req, res, next) => {
     });
     await review.save();
     res.status(200).send({ message: 'Review saved successfully' });
-  } catch {
+  } catch (error) {
+    console.error('Error in createReview:', error);
     next(new RealEstateErrors());
   }
 };
