@@ -26,6 +26,7 @@ export const createReview = async (req, res, next) => {
 
     const review = new Review({
       ...req.body,
+      listingId,
       userId: req.user.id,
     });
     await review.save();
