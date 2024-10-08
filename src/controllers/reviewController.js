@@ -39,20 +39,30 @@ export const createReview = async (req, res, next) => {
 
 export const getAllReviews = async (req, res, next) => {
   try {
-    const reviews = await Review.find({});
-    const filteredReviews = reviews.map((review) => ({
-      id: review._id,
-      userId: review.userId,
-      listingId: review.listingId,
-      stars: review.stars,
-      comments: review.comment,
-      isDeleted: review.isDeleted,
-    }));
-    res.status(200).send(filteredReviews);
-  } catch {
+    const reviews = await Review.aggregate([
+      {
+        $match: {}, 
+      },
+      {
+        $lookup: {
+          from: 'listings', 
+          localField: 'listingId',
+          foreignField: '_id', 
+          as: 'listingInfo', 
+        },
+      },
+      {
+        $unwind: '$listingInfo',
+      },
+    ]);
+
+    res.status(200).send(reviews);
+  } catch (error) {
+    console.error('Error in getAllReviews:', error);
     next(new RealEstateErrors());
   }
 };
+
 
 export const updateReview = async (req, res, next) => {
   const { id } = req.params;
