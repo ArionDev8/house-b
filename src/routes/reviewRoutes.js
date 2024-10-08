@@ -18,7 +18,7 @@ router.post(
   validate('body', newReviewSchema),
   createReview,
 );
-router.get('/', authenticateJWT, getAllReviews);
+router.get('/', getAllReviews);
 router.get('/:listingId', authenticateJWT, getReviewsByListing);
 router.put(
   '/:id',
