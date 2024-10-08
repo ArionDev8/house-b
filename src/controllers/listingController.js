@@ -52,7 +52,7 @@ export const deleteImage = async (req, res, next) => {
     }
 
     await unlink(`./src/Images/${imageId}`);
-    listing.images.filter((image) => image.img !== imageId);
+    listing.images = listing.images.filter((image) => image.img !== imageId);
     await listing.save();
 
     res.json({ message: 'Deleted successfully' });
