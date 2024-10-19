@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 const url = process.env.MONGO_URL;
+console.log(url);
 
 mongoose
   .connect(url)
